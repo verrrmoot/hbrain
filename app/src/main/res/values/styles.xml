@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Widget.Google.SignInButton" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">@drawable/google_signin_button</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:drawablePadding">12dp</item>
+    </style>
+
+</resources>
