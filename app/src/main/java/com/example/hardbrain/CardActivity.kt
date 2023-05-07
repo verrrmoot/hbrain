@@ -1,5 +1,6 @@
 package com.example.hardbrain
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -38,8 +39,9 @@ class CardActivity : AppCompatActivity() {
         // Обработчик нажатия на кнопку добавления карточки
         val addCardButton = findViewById<FloatingActionButton>(R.id.addCardButton)
         addCardButton.setOnClickListener {
+            /*
             // Создаем новую карточку с пустым фронтальным и обратным текстом
-            val newCard = Card(UUID.randomUUID().toString(), "1", "1")
+            val newCard = Card(UUID.randomUUID().toString(), "1", "13")
 
             // Добавляем карточку в Firebase
             firebaseHelper.addCard(newCard) { success ->
@@ -51,7 +53,11 @@ class CardActivity : AppCompatActivity() {
                     // Если добавление не удалось, выводим сообщение об ошибке
                     Toast.makeText(this, "Failed to add card", Toast.LENGTH_SHORT).show()
                 }
-            }
+            } */
+
+            val intent = Intent(this, EditCardActivity::class.java)
+            startActivity(intent)
+            finish()
         }
     }
 }
