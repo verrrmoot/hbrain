@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "544105006290",
+    "firebase_url": "https://hardbrain-948d8-default-rtdb.firebaseio.com",
     "project_id": "hardbrain-948d8",
     "storage_bucket": "hardbrain-948d8.appspot.com"
   },
@@ -15,15 +16,15 @@
       "oauth_client": [
         {
           "client_id": "544105006290-isucsvbmfpdslqnm6kevg0o39tpnr21h.apps.googleusercontent.com",
-          "client_type": 3
-        },
-        {
-          "client_id": "544105006290-c610ed9n89kus99ntf7ap54un9rbeidv.apps.googleusercontent.com",
-          "client_type": 3,
+          "client_type": 1,
           "android_info": {
             "package_name": "com.example.hardbrain",
             "certificate_hash": "229f16936f5bf1ef0b6436cf75e50d1ade429bdf"
-        }
+          }
+        },
+        {
+          "client_id": "544105006290-c610ed9n89kus99ntf7ap54un9rbeidv.apps.googleusercontent.com",
+          "client_type": 3
         }
       ],
       "api_key": [

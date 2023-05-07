@@ -36,5 +36,15 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+
+
+        // Добавляем обработчик для нажатия на кнопку
+        val buttoncard = findViewById<Button>(R.id.btn_go_cards)
+
+        buttoncard.setOnClickListener {
+            val intent = Intent(this, CardActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
     }
 }
