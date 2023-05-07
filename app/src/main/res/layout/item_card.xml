@@ -12,21 +12,29 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        >
 
-        <TextView
-            android:id="@+id/frontTextView"
+        <ViewFlipper
+            android:id="@+id/view_flipper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="20sp" />
+            android:padding="5dp">
 
-        <TextView
-            android:id="@+id/backTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textSize="16sp"
-            android:textStyle="italic" />
+            <include
+                layout="@layout/card_front_layout"
+                android:id="@+id/cardFrontLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="3dp"/>
+
+            <include
+                layout="@layout/card_back_layout"
+                android:id="@+id/cardBackLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="3dp"/>
+
+        </ViewFlipper>
 
     </LinearLayout>
 
