@@ -1,11 +1,15 @@
 package com.example.hardbrain
 
+import android.R.color
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.ViewFlipper
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+
 
 class CardAdapter(var cards: MutableList<Card>) : RecyclerView.Adapter<CardAdapter.CardViewHolder>() {
 
@@ -24,6 +28,7 @@ class CardAdapter(var cards: MutableList<Card>) : RecyclerView.Adapter<CardAdapt
     inner class CardViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val tvFront: TextView = itemView.findViewById(R.id.tv_front)
         private val tvBack: TextView = itemView.findViewById(R.id.tv_back)
+        private val cardView = itemView.findViewById<CardView>(R.id.my_card_view)
         private val viewFlipper: ViewFlipper = itemView.findViewById(R.id.view_flipper)
 
         init {
@@ -35,6 +40,10 @@ class CardAdapter(var cards: MutableList<Card>) : RecyclerView.Adapter<CardAdapt
         fun bind(card: Card) {
             tvFront.text = card.front
             tvBack.text = card.back
+            val hexColor = "#" + Integer.toHexString(card.color)
+            cardView.setCardBackgroundColor(Color.parseColor(hexColor))
         }
     }
+
+
 }

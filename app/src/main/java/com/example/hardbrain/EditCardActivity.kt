@@ -1,11 +1,18 @@
 package com.example.hardbrain
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.util.UUID
@@ -14,20 +21,43 @@ class EditCardActivity : AppCompatActivity() {
 
     private lateinit var adapter: CardAdapter
     private lateinit var firebaseHelper: FirebaseHelper
+    private lateinit var mContext: Context
 
+    private lateinit var btnColorWhite: Button
+    private lateinit var btnColorBlue: Button
+    private lateinit var btnColorRed: Button
+    private lateinit var btnColorGreen: Button
+    private lateinit var btnColorYellow: Button
+
+    private lateinit var cardView: CardView
+    private var color: Int = R.color.white // цвет по умолчанию
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_card)
 
-
+        mContext = this // инициализация контекста
         adapter = CardAdapter(mutableListOf())
-
         firebaseHelper = FirebaseHelper()
+        val itemCardView = layoutInflater.inflate(R.layout.item_card, null)
+
+        btnColorWhite = findViewById(R.id.btn_color_white)
+        btnColorBlue = findViewById(R.id.btn_color_blue)
+        btnColorRed = findViewById(R.id.btn_color_red)
+        btnColorGreen = findViewById(R.id.btn_color_green)
+        btnColorYellow = findViewById(R.id.btn_color_yellow)
 
         val etFront = findViewById<TextView>(R.id.edit_text_front)
         val etBack = findViewById<TextView>(R.id.edit_text_back)
         val btnSave = findViewById<TextView>(R.id.button_save_card)
+        cardView = itemCardView.findViewById(R.id.my_card_view)
 
+
+
+        btnColorWhite.setOnClickListener { color = getColorByButton(it) }
+        btnColorBlue.setOnClickListener { color = getColorByButton(it) }
+        btnColorRed.setOnClickListener { color = getColorByButton(it) }
+        btnColorGreen.setOnClickListener { color = getColorByButton(it) }
+        btnColorYellow.setOnClickListener { color = getColorByButton(it) }
 
         // Обработчик нажатия на кнопку сохранения карточки
         btnSave.setOnClickListener {
@@ -35,15 +65,16 @@ class EditCardActivity : AppCompatActivity() {
             val front = etFront.text.toString().trim()
             val back = etBack.text.toString().trim()
 
+
             // Проверяем, что оба поля заполнены
             if (front.isEmpty() || back.isEmpty()) {
                 Toast.makeText(this, "Заполните все поля", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Создаем новую карточку
 
-            val newCard = Card(UUID.randomUUID().toString(), front, back)
+            // Создаем новую карточку
+            val newCard = Card(UUID.randomUUID().toString(), front, back, color)
             firebaseHelper.addCard(newCard) { success ->
                 if (success) {
                     adapter.cards.add(newCard)
@@ -57,6 +88,16 @@ class EditCardActivity : AppCompatActivity() {
                         .show()
                 }
             }
+        }
+    }
+
+    fun getColorByButton(view: View): Int {
+        return when (view.id) {
+            R.id.btn_color_blue -> R.color.blue
+            R.id.btn_color_red -> R.color.red
+            R.id.btn_color_green -> R.color.green
+            R.id.btn_color_yellow -> R.color.yellow
+            else -> R.color.white // цвет по умолчанию
         }
     }
 }

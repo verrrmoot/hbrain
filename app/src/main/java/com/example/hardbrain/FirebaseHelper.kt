@@ -3,12 +3,14 @@ package com.example.hardbrain
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import java.io.Serializable
 
 data class Card(
     var id: String? = null,
     var front: String = "",
-    var back: String = ""
-)
+    var back: String = "",
+    var color: Int = R.color.white // цвет по умолчанию
+): Serializable
 
 class FirebaseHelper {
 
