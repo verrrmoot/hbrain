@@ -42,6 +42,8 @@ class CardAdapter(var cards: MutableList<Card>) : RecyclerView.Adapter<CardAdapt
             tvBack.text = card.back
             val hexColor = "#" + Integer.toHexString(card.color)
             cardView.setCardBackgroundColor(Color.parseColor(hexColor))
+            tvBack.setBackgroundColor(Color.parseColor(hexColor))
+            tvFront.setBackgroundColor(Color.parseColor(hexColor))
         }
     }
 

@@ -9,7 +9,7 @@ data class Card(
     var id: String? = null,
     var front: String = "",
     var back: String = "",
-    var color: Int = R.color.white // цвет по умолчанию
+    var color: Int = -1 // цвет по умолчанию white
 ): Serializable
 
 class FirebaseHelper {

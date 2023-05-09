@@ -30,7 +30,6 @@ class EditCardActivity : AppCompatActivity() {
     private lateinit var btnColorYellow: Button
 
     private lateinit var cardView: CardView
-    private var color: Int = R.color.white // цвет по умолчанию
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_card)
@@ -39,6 +38,7 @@ class EditCardActivity : AppCompatActivity() {
         adapter = CardAdapter(mutableListOf())
         firebaseHelper = FirebaseHelper()
         val itemCardView = layoutInflater.inflate(R.layout.item_card, null)
+        var color: Int = ContextCompat.getColor(this, R.color.white) // цвет по умолчанию
 
         btnColorWhite = findViewById(R.id.btn_color_white)
         btnColorBlue = findViewById(R.id.btn_color_blue)
@@ -53,11 +53,11 @@ class EditCardActivity : AppCompatActivity() {
 
 
 
-        btnColorWhite.setOnClickListener { color = getColorByButton(it) }
-        btnColorBlue.setOnClickListener { color = getColorByButton(it) }
-        btnColorRed.setOnClickListener { color = getColorByButton(it) }
-        btnColorGreen.setOnClickListener { color = getColorByButton(it) }
-        btnColorYellow.setOnClickListener { color = getColorByButton(it) }
+        btnColorWhite.setOnClickListener { color = getColorByButton(it, this) }
+        btnColorBlue.setOnClickListener { color = getColorByButton(it, this) }
+        btnColorRed.setOnClickListener { color = getColorByButton(it, this) }
+        btnColorGreen.setOnClickListener { color = getColorByButton(it, this) }
+        btnColorYellow.setOnClickListener { color = getColorByButton(it, this) }
 
         // Обработчик нажатия на кнопку сохранения карточки
         btnSave.setOnClickListener {
@@ -91,14 +91,37 @@ class EditCardActivity : AppCompatActivity() {
         }
     }
 
-    fun getColorByButton(view: View): Int {
+    fun getColorByButton(view: View, context: Context): Int {
         return when (view.id) {
-            R.id.btn_color_blue -> R.color.blue
-            R.id.btn_color_red -> R.color.red
-            R.id.btn_color_green -> R.color.green
-            R.id.btn_color_yellow -> R.color.yellow
-            else -> R.color.white // цвет по умолчанию
+            R.id.btn_color_blue -> ContextCompat.getColor(context, R.color.blue)
+            R.id.btn_color_red -> ContextCompat.getColor(context, R.color.red)
+            R.id.btn_color_green -> ContextCompat.getColor(context, R.color.green)
+            R.id.btn_color_yellow -> ContextCompat.getColor(context, R.color.yellow)
+            else -> ContextCompat.getColor(context, R.color.white) // цвет по умолчанию
         }
     }
+
+/*
+fun getColorByButton(view: View): String {
+    val context = view.context
+    return when (view.id) {
+        R.id.btn_color_blue -> String.format("#%06X", 0xFFFFFF and context.resources.getColor(R.color.blue))
+        R.id.btn_color_red -> String.format("#%06X", 0xFFFFFF and context.resources.getColor(R.color.red))
+        R.id.btn_color_green -> String.format("#%06X", 0xFFFFFF and context.resources.getColor(R.color.green))
+        R.id.btn_color_yellow -> String.format("#%06X", 0xFFFFFF and context.resources.getColor(R.color.yellow))
+        else -> String.format("#%06X", 0xFFFFFF and context.resources.getColor(R.color.white)) // цвет по умолчанию
+    }
+}
+
+
+fun getColorByButton(view: View): Int {
+  return when (view.id) {
+        R.id.btn_color_blue -> R.color.blue
+        R.id.btn_color_red -> R.color.red
+        R.id.btn_color_green -> R.color.green
+        R.id.btn_color_yellow -> R.color.yellow
+        else -> R.color.white // цвет по умолчанию
+    }
+}*/
 }
 
