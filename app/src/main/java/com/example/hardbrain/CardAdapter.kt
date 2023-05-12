@@ -21,6 +21,11 @@ import kotlin.properties.Delegates
 class CardAdapter(var cards: MutableList<Card>) : RecyclerView.Adapter<CardAdapter.CardViewHolder>() {
 
     val selectedCards = mutableListOf<Card>()
+    private var longClickListener: ((Card, CardViewHolder) -> Unit)? = null
+
+    fun setOnLongClickListener(listener: (Card, CardViewHolder) -> Unit) {
+        longClickListener = listener
+    }
 
        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_card, parent, false)
@@ -55,6 +60,16 @@ class CardAdapter(var cards: MutableList<Card>) : RecyclerView.Adapter<CardAdapt
             holder.viewFlipper.showNext()
         }
 
+        holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
+            val cardbox = cards[position]
+            if (isChecked) {
+                selectedCards.add(cardbox)
+            } else {
+                selectedCards.remove(cardbox)
+            }
+        }
+
+        /*
         holder.itemView.setOnLongClickListener { view ->
             holder.checkBox.visibility = View.VISIBLE
             if (selectedCards.contains(card)) {
@@ -66,9 +81,9 @@ class CardAdapter(var cards: MutableList<Card>) : RecyclerView.Adapter<CardAdapt
             }
             true
         }
-
-        holder.checkBox.isChecked = selectedCards.contains(card)
-        holder.checkBox.visibility = if (selectedCards.isEmpty()) View.GONE else View.VISIBLE
+*/
+        //holder.checkBox.isChecked = selectedCards.contains(card)
+        //holder.checkBox.visibility = if (selectedCards.isEmpty()) View.GONE else View.VISIBLE
 
 
 
@@ -108,8 +123,14 @@ class CardAdapter(var cards: MutableList<Card>) : RecyclerView.Adapter<CardAdapt
         val cardView = itemView.findViewById<CardView>(R.id.my_card_view)
         val viewFlipper: ViewFlipper = itemView.findViewById(R.id.view_flipper)
         val checkBox: CheckBox = itemView.findViewById(R.id.checkbox)
+        val recyclerView: RecyclerView = actiview.findViewById(R.id.recycler_view)
 
-
+        init {
+            itemView.setOnLongClickListener {
+                longClickListener?.invoke(cards[adapterPosition], this)
+                true
+            }
+        }
 
                /*
                 init {
@@ -145,6 +166,28 @@ class CardAdapter(var cards: MutableList<Card>) : RecyclerView.Adapter<CardAdapt
         cardView.layoutParams = layoutParams
     }
 
+    fun showCheckBoxes(recyclerView: RecyclerView) {
+        for (i in cards.indices) {
+            val viewHolder = recyclerView.findViewHolderForAdapterPosition(i) as? CardViewHolder
+            viewHolder?.checkBox?.visibility = View.VISIBLE
+        }
+    }
+
+    fun hideCheckBoxes(recyclerView: RecyclerView) {
+        for (i in cards.indices) {
+            val viewHolder = recyclerView.findViewHolderForAdapterPosition(i) as? CardViewHolder
+            viewHolder?.checkBox?.visibility = View.INVISIBLE
+        }
+    }
+
+    fun getPosition(card: Card): Int {
+        for (i in cards.indices) {
+            if (cards[i] == card) {
+                return i
+            }
+        }
+        return -1
+    }
 
 
 }

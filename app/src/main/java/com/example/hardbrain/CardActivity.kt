@@ -1,16 +1,13 @@
 package com.example.hardbrain
 
 import android.annotation.SuppressLint
-import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -56,17 +53,74 @@ class CardActivity : AppCompatActivity() {
             finish()
         }
 
+
+        // добавляем обработчик долгого нажатия на карточку
+            adapter.setOnLongClickListener { card, holder ->
+            // показываем чекбоксы
+                adapter.showCheckBoxes(recyclerView)
+                /*if (adapter.selectedCards.contains(card)) {
+                    adapter.selectedCards.remove(card)
+                    holder.checkBox.isChecked = false
+                } else {
+                    adapter.selectedCards.add(card)
+                    holder.checkBox.isChecked = true
+                }*/
+
+            // возвращаем true, чтобы показать контекстное меню (если оно есть)
+            true
+        }
+
+
+
     }
-
-
-
 
     // указание элементов меню
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.my_menu, menu)
         return true
     }
+    // добавляем обработчик клика на кнопку удаления выбранных карточек
 
+    public fun onDeleteSelectedCardsButtonClick(item: MenuItem) {
+        // получаем список выбранных карточек
+        adapter.selectedCards.forEach { card ->
+            val position = adapter.getPosition(card)
+            Log.d("Position", position.toString())
+            Log.d("Size", adapter.cards.size.toString())
+            Log.d("Count", adapter.itemCount.toString())
+            Log.d("SelectedCards", adapter.selectedCards.toString())
+            if (position != -1) {
+            // удаляем выбранные карточки из БД
+            card.id?.let {
+                Log.d("Cards2", adapter.cards.toString())
+                // удаляем выбранные карточки из списка
+                adapter.cards.removeAt(position)
+                Log.d("Cards", adapter.cards.toString())
+
+                // обновляем позицию элементов, находящихся после удаленного элемента
+                adapter.notifyItemRangeChanged(0, adapter.cards.size)
+
+                // уведомляем адаптер об изменениях в списке
+                adapter.notifyItemRemoved(position)
+                firebaseHelper.deleteCard(it) { isSuccess ->
+                    if (isSuccess) {
+                        Log.d("Cards1", adapter.cards.toString())
+
+                    } else {
+                        // обработка ошибки удаления из БД
+                        Toast.makeText(this, "Failed to delete selected cards", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                }
+            }
+            }
+        }
+        adapter.hideCheckBoxes(recyclerView)
+        adapter.selectedCards.clear()
+        adapter.notifyItemRangeChanged(0, adapter.itemCount)
+    }
+
+    /*
     public fun onDeleteSelectedCardsButtonClick(item: MenuItem) {
         for (card in adapter.cards) {
             if (adapter.selectedCards.contains(card)) {
@@ -86,7 +140,7 @@ class CardActivity : AppCompatActivity() {
         adapter.selectedCards.clear()
         adapter.notifyItemRangeChanged(0, adapter.itemCount)
     }
-
+*/
 
 
 }
