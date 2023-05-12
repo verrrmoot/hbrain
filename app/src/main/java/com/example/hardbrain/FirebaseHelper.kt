@@ -1,5 +1,6 @@
 package com.example.hardbrain
 
+import android.content.ContentValues.TAG
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -53,7 +54,12 @@ class FirebaseHelper {
                 callback(cards)
             }
 
-            override fun onCancelled(error: DatabaseError) {}
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.w(TAG, "loadCards:onCancelled", error.toException())
+                Log.d("FirebaseHelper", "cards: users/$userId/cards")
+
+            }
         })
     }
 }

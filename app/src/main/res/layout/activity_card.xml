@@ -5,10 +5,12 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="6dp">
+
+
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+        android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -16,14 +18,15 @@
 
 
 
+
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/addCardButton"
                 android:layout_width="wrap_content"
-                android:layout_height="129dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:layout_marginTop="16dp"
                 android:src="@drawable/ic_add"
-                app:backgroundTint="@color/teal_200"
+                app:backgroundTint="@color/blue"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:contentDescription="TODO" />

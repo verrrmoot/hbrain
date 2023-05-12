@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="FlipperView">
+        <attr name="autoStart" format="boolean" />
+        <attr name="flipInterval" format="integer" />
+    </declare-styleable>
+
+</resources>
