@@ -3,10 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/delete"
-        android:title="Delete"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_delete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="onDeleteSelectedCardsButtonClick"/>
+        android:icon="@drawable/ic_delete"
+        android:onClick="onDeleteSelectedCardsButtonClick"
+        android:title="Delete"
+        android:visible="false"
+        app:showAsAction="always" />
 </menu>

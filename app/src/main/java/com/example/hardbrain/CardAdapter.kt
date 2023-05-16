@@ -1,6 +1,9 @@
 package com.example.hardbrain
 
 import android.animation.ValueAnimator
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
@@ -10,10 +13,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.CheckBox
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.ViewFlipper
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.properties.Delegates
 
@@ -39,25 +44,43 @@ class CardAdapter(var cards: MutableList<Card>) : RecyclerView.Adapter<CardAdapt
     override fun getItemCount(): Int = cards.size
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
         val card = cards[position]
-        holder.viewFlipper.displayedChild = 0
         holder.tvFront.text = card.front
         holder.tvBack.text = card.back
+        // Изначально обратная сторона скрыта
+        holder.tvBack.visibility = View.GONE
+        holder.divider.visibility = View.GONE
 
-        val frontHeight = getTextHeight(holder.tvFront) * 5
-        val backHeight = getTextHeight(holder.tvBack) * 5
-
-        holder.viewFlipper.layoutParams.height = frontHeight
-
+        // Обработчик нажатия на карточку
         holder.cardView.setOnClickListener {
-            val newHeight = if (holder.viewFlipper.displayedChild == 0) {
-                backHeight
+            // Проверяем, открыта ли уже карточка
+            val isOpen = holder.isCardOpen
+
+            // Изменяем состояние карточки (открыта/закрыта)
+            holder.isCardOpen = !isOpen
+
+            if (isOpen) {
+                // Показываем обратную сторону
+                holder.viewFlipper.showNext()
+                holder.cardView.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
             } else {
-                frontHeight
+                // Скрываем обратную сторону
+                holder.viewFlipper.showPrevious()
+                holder.cardView.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
             }
 
-            animateHeight(holder.viewFlipper, newHeight)
-            holder.cardView.layoutParams.height = newHeight
-            holder.viewFlipper.showNext()
+            holder.cardView.requestLayout() // Обновляем макет, чтобы изменения высоты применились
+
+            // Обновляем видимость обратной стороны карточки
+            holder.tvBack.visibility = if (!isOpen) {
+                View.VISIBLE // Открытое состояние: показываем обратную сторону
+            } else {
+                View.GONE // Закрытое состояние: скрываем обратную сторону
+            }
+            holder.divider.visibility = if (!isOpen) {
+                View.VISIBLE // Открытое состояние: показываем обратную сторону
+            } else {
+                View.GONE // Закрытое состояние: скрываем обратную сторону
+            }
         }
 
         holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
@@ -69,23 +92,13 @@ class CardAdapter(var cards: MutableList<Card>) : RecyclerView.Adapter<CardAdapt
             }
         }
 
-        /*
-        holder.itemView.setOnLongClickListener { view ->
-            holder.checkBox.visibility = View.VISIBLE
-            if (selectedCards.contains(card)) {
-                selectedCards.remove(card)
-                holder.checkBox.isChecked = false
-            } else {
-                selectedCards.add(card)
-                holder.checkBox.isChecked = true
-            }
-            true
+        holder.editIcon.setOnClickListener {
+            val intent = Intent(holder.itemView.context.applicationContext, EditCardActivity::class.java)
+            intent.putExtra("card_id", cards[position].id)
+            intent.putExtra("isNewCard", false) // передача флага
+            intent.putExtra("position", position)
+            (holder.itemView.context as Activity).startActivityForResult(intent, EDIT_REQUEST_CODE)
         }
-*/
-        //holder.checkBox.isChecked = selectedCards.contains(card)
-        //holder.checkBox.visibility = if (selectedCards.isEmpty()) View.GONE else View.VISIBLE
-
-
 
         val hexColor = "#" + Integer.toHexString(card.color)
         holder.cardView.setCardBackgroundColor(Color.parseColor(hexColor))
@@ -93,29 +106,7 @@ class CardAdapter(var cards: MutableList<Card>) : RecyclerView.Adapter<CardAdapt
         holder.tvFront.setBackgroundColor(Color.parseColor(hexColor))
     }
 
-    fun animateHeight(view: View, targetHeight: Int) {
-        val animator = ValueAnimator.ofInt(view.height, targetHeight)
-        animator.addUpdateListener { animation ->
-            val value = animation.animatedValue as Int
-            val layoutParams = view.layoutParams
-            layoutParams.height = value
-            view.layoutParams = layoutParams
-        }
-        // Запускаем анимацию
-        animator.duration = 500 // длительность анимации 500 миллисекунд
-        animator.start()
-    }
 
-    fun getTextHeight(textView: TextView): Int {
-        val paint = Paint()
-        val rect = Rect()
-
-        paint.typeface = Typeface.SANS_SERIF // установите шрифт, который используется в TextView
-        paint.textSize = textView.textSize // установите размер шрифта, который используется в TextView
-
-        paint.getTextBounds(textView.text.toString(), 0, textView.text.length, rect)
-        return (rect.height())
-    }
 
     inner class CardViewHolder(itemView: View, actiview: View) : RecyclerView.ViewHolder(itemView) {
         val tvFront: TextView = itemView.findViewById(R.id.tv_front)
@@ -123,7 +114,9 @@ class CardAdapter(var cards: MutableList<Card>) : RecyclerView.Adapter<CardAdapt
         val cardView = itemView.findViewById<CardView>(R.id.my_card_view)
         val viewFlipper: ViewFlipper = itemView.findViewById(R.id.view_flipper)
         val checkBox: CheckBox = itemView.findViewById(R.id.checkbox)
-        val recyclerView: RecyclerView = actiview.findViewById(R.id.recycler_view)
+        val editIcon: ImageView = itemView.findViewById(R.id.edit_icon)
+        var isCardOpen: Boolean = false
+        val divider: View = itemView.findViewById(R.id.divider)
 
         init {
             itemView.setOnLongClickListener {
@@ -131,33 +124,6 @@ class CardAdapter(var cards: MutableList<Card>) : RecyclerView.Adapter<CardAdapt
                 true
             }
         }
-
-               /*
-                init {
-                    // Устанавливаем стандартные анимации для переворота
-                    viewFlipper.setInAnimation(itemView.context, android.R.anim.fade_in)
-                    viewFlipper.setOutAnimation(itemView.context, android.R.anim.fade_out)
-                    viewFlipper.displayedChild = 0
-                    itemView.setOnClickListener {
-                        viewFlipper.showNext()
-                    }
-                }
-
-                fun bind(card: Card) {
-                    tvFront.text = card.front
-                    tvBack.text = card.back
-                    val hexColor = "#" + Integer.toHexString(card.color)
-                    cardView.setCardBackgroundColor(Color.parseColor(hexColor))
-                    tvBack.setBackgroundColor(Color.parseColor(hexColor))
-                    tvFront.setBackgroundColor(Color.parseColor(hexColor))
-
-                    // Устанавливаем высоту CardView на основе максимальной высоты между tvFront и tvBack
-                    val textViewHeight = tvFront.height
-                    val backTextViewHeight = tvBack.height
-                    val maxHeight = maxOf(textViewHeight, backTextViewHeight)
-                    cardView.layoutParams.height = maxHeight
-                    viewFlipper.layoutParams.height = maxHeight
-                }*/
     }
 
     private fun resizeCardView(cardView: CardView, height: Int) {
@@ -188,6 +154,13 @@ class CardAdapter(var cards: MutableList<Card>) : RecyclerView.Adapter<CardAdapt
         }
         return -1
     }
+
+
+    companion object {
+        const val EDIT_REQUEST_CODE = 123
+    }
+
+
 
 
 }

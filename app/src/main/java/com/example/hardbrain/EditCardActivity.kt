@@ -1,10 +1,12 @@
 package com.example.hardbrain
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
@@ -29,7 +31,7 @@ class EditCardActivity : AppCompatActivity() {
     private lateinit var btnColorGreen: Button
     private lateinit var btnColorYellow: Button
 
-    //private lateinit var cardView: CardView
+    @SuppressLint("SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_card)
@@ -37,7 +39,6 @@ class EditCardActivity : AppCompatActivity() {
         mContext = this // инициализация контекста
         adapter = CardAdapter(mutableListOf())
         firebaseHelper = FirebaseHelper()
-        //val itemCardView = layoutInflater.inflate(R.layout.item_card, null)
         var color: Int = ContextCompat.getColor(this, R.color.white) // цвет по умолчанию
 
         btnColorWhite = findViewById(R.id.btn_color_white)
@@ -49,9 +50,6 @@ class EditCardActivity : AppCompatActivity() {
         val etFront = findViewById<TextView>(R.id.edit_text_front)
         val etBack = findViewById<TextView>(R.id.edit_text_back)
         val btnSave = findViewById<TextView>(R.id.button_save_card)
-        //cardView = itemCardView.findViewById(R.id.my_card_view)
-
-
 
         btnColorWhite.setOnClickListener { color = getColorByButton(it, this) }
         btnColorBlue.setOnClickListener { color = getColorByButton(it, this) }
@@ -59,35 +57,89 @@ class EditCardActivity : AppCompatActivity() {
         btnColorGreen.setOnClickListener { color = getColorByButton(it, this) }
         btnColorYellow.setOnClickListener { color = getColorByButton(it, this) }
 
-        // Обработчик нажатия на кнопку сохранения карточки
-        btnSave.setOnClickListener {
-            // Считываем данные из полей формы
-            val front = etFront.text.toString().trim()
-            val back = etBack.text.toString().trim()
+        val isNewCard = intent.getBooleanExtra("isNewCard", true)
+        val cardId = intent.getStringExtra("card_id")
+        val position = intent.getIntExtra("position", -1)
 
 
-            // Проверяем, что оба поля заполнены
-            if (front.isEmpty() || back.isEmpty()) {
-                Toast.makeText(this, "Заполните все поля", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
 
 
-            // Создаем новую карточку
-            val newCard = Card(UUID.randomUUID().toString(), front, back, color)
-            firebaseHelper.addCard(newCard) { success ->
-                if (success) {
-                    adapter.cards.add(newCard)
-                    adapter.notifyItemInserted(adapter.cards.size - 1)
+            if (isNewCard) {
+            // Обработчик нажатия на кнопку сохранения карточки
+            btnSave.setOnClickListener {
+                // Считываем данные из полей формы
+                val front = etFront.text.toString().trim()
+                val back = etBack.text.toString().trim()
 
-                    val intent = Intent(this, CardActivity::class.java)
-                    startActivity(intent)
-                    finish()
-                } else {
-                    Toast.makeText(this, "Ошибка при добавлении карточки", Toast.LENGTH_SHORT)
-                        .show()
+                // Проверяем, что оба поля заполнены
+                if (front.isEmpty() || back.isEmpty()) {
+                    Toast.makeText(this, "Заполните все поля", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                // Создаем новую карточку
+                val newCard = Card(UUID.randomUUID().toString(), front, back, color)
+                firebaseHelper.addCard(newCard) { success ->
+                    if (success) {
+                        adapter.cards.add(newCard)
+                        adapter.notifyItemInserted(adapter.cards.size - 1)
+
+                        val intent = Intent(this, CardActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    } else {
+                        Toast.makeText(this, "Ошибка при добавлении карточки", Toast.LENGTH_SHORT)
+                            .show()
+                    }
                 }
             }
+
+        }
+        else{
+            cardId?.let {
+                firebaseHelper.getCardById(it) { card ->
+                    if (card != null) {
+                        // Редактируем существующую карточку
+                        etFront.text = card.front
+                        etBack.text = card.back
+                        color = card.color
+
+                        Log.d("Id", cardId)
+                        Log.d("Position", position.toString())
+                        btnSave.setOnClickListener {
+
+                            val front = etFront.text.toString().trim()
+                            val back = etBack.text.toString().trim()
+                            // Проверяем, что оба поля заполнены
+                            if (front.isEmpty() || back.isEmpty()) {
+                                Toast.makeText(this, "Заполните все поля", Toast.LENGTH_SHORT).show()
+                                return@setOnClickListener
+                            }
+                            val editedCard = Card(cardId, front, back, color)
+                            Log.d("Id editedCard", editedCard.id.toString())
+
+                            firebaseHelper.updateCard(editedCard) { success ->
+                                if (success) {
+                                    adapter.cards[position] = editedCard
+                                    adapter.notifyItemChanged(position)
+                                    val intent = Intent(this, CardActivity::class.java)
+                                    startActivity(intent)
+                                    finish()
+                                } else {
+                                    Toast.makeText(this,"Ошибка при редактировании карточки",Toast.LENGTH_SHORT).show()
+                                }
+
+
+                            }
+
+                        }
+                    }
+                    else {
+                        Toast.makeText(this,"Карточка с таким идентификатором не найдена",Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+
         }
     }
 

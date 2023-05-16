@@ -62,4 +62,19 @@ class FirebaseHelper {
             }
         })
     }
+
+    fun getCardById(cardId: String, callback: (Card?) -> Unit) {
+        cardsRef.child(cardId).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val card = snapshot.getValue(Card::class.java)
+                callback(card)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.w(TAG, "loadCard:onCancelled", error.toException())
+                Log.d("FirebaseHelper", "cards: users/$userId/cards")
+            }
+        })
+    }
+
 }
