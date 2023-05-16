@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/collect_name"
+        android:layout_width="match_parent"
+        android:layout_height="189dp"
+        android:layout_marginTop="44dp"
+        android:hint="Collection name"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="16dp" />
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="60dp"
+        android:padding="3dp"
+        app:layout_constraintBottom_toTopOf="@+id/button_save_collection"
+        app:layout_constraintTop_toBottomOf="@+id/collect_name"
+        app:layout_constraintVertical_bias="1.0"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="24dp">
+
+        <Button
+            android:id="@+id/btn_color_white"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_marginHorizontal="3dp"
+            android:backgroundTint="@color/white"
+            android:contentDescription="Выберите цвет"
+            tools:ignore="MissingConstraints" />
+
+        <Button
+            android:id="@+id/btn_color_blue"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_marginHorizontal="3dp"
+            android:backgroundTint="@color/blue"
+            android:contentDescription="Выберите цвет"
+            tools:ignore="MissingConstraints" />
+
+        <Button
+            android:id="@+id/btn_color_green"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_marginHorizontal="3dp"
+
+            android:backgroundTint="@color/green"
+            android:contentDescription="Выберите цвет"
+            tools:ignore="MissingConstraints" />
+
+        <Button
+            android:id="@+id/btn_color_red"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_marginHorizontal="3dp"
+
+            android:backgroundTint="@color/red"
+            android:contentDescription="Выберите цвет"
+            tools:ignore="MissingConstraints" />
+
+        <Button
+            android:id="@+id/btn_color_yellow"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_marginHorizontal="3dp"
+
+            android:backgroundTint="@color/yellow"
+            android:contentDescription="Выберите цвет"
+            tools:ignore="MissingConstraints" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/button_save_collection"
+        android:layout_width="111dp"
+        android:layout_height="79dp"
+        android:layout_marginBottom="236dp"
+        android:text="Save"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/collect_name"
+        app:layout_constraintVertical_bias="1.0" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

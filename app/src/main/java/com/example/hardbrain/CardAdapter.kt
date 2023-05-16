@@ -23,7 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlin.properties.Delegates
 
 
-class CardAdapter(var cards: MutableList<Card>) : RecyclerView.Adapter<CardAdapter.CardViewHolder>() {
+class CardAdapter(var cards: MutableList<Card>, private val collectionId: String?) : RecyclerView.Adapter<CardAdapter.CardViewHolder>() {
 
     val selectedCards = mutableListOf<Card>()
     private var longClickListener: ((Card, CardViewHolder) -> Unit)? = null
@@ -97,6 +97,7 @@ class CardAdapter(var cards: MutableList<Card>) : RecyclerView.Adapter<CardAdapt
             intent.putExtra("card_id", cards[position].id)
             intent.putExtra("isNewCard", false) // передача флага
             intent.putExtra("position", position)
+            intent.putExtra("collectionId", collectionId)
             (holder.itemView.context as Activity).startActivityForResult(intent, EDIT_REQUEST_CODE)
         }
 
@@ -126,11 +127,6 @@ class CardAdapter(var cards: MutableList<Card>) : RecyclerView.Adapter<CardAdapt
         }
     }
 
-    private fun resizeCardView(cardView: CardView, height: Int) {
-        val layoutParams = cardView.layoutParams
-        layoutParams.height = height
-        cardView.layoutParams = layoutParams
-    }
 
     fun showCheckBoxes(recyclerView: RecyclerView) {
         for (i in cards.indices) {

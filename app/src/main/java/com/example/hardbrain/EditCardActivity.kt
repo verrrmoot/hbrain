@@ -36,8 +36,13 @@ class EditCardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_card)
 
+        val isNewCard = intent.getBooleanExtra("isNewCard", true)
+        val cardId = intent.getStringExtra("card_id")
+        val position = intent.getIntExtra("position", -1)
+        val collectionId = intent.getStringExtra("collectionId")!!
+
         mContext = this // инициализация контекста
-        adapter = CardAdapter(mutableListOf())
+        adapter = CardAdapter(mutableListOf(), collectionId)
         firebaseHelper = FirebaseHelper()
         var color: Int = ContextCompat.getColor(this, R.color.white) // цвет по умолчанию
 
@@ -57,13 +62,6 @@ class EditCardActivity : AppCompatActivity() {
         btnColorGreen.setOnClickListener { color = getColorByButton(it, this) }
         btnColorYellow.setOnClickListener { color = getColorByButton(it, this) }
 
-        val isNewCard = intent.getBooleanExtra("isNewCard", true)
-        val cardId = intent.getStringExtra("card_id")
-        val position = intent.getIntExtra("position", -1)
-
-
-
-
             if (isNewCard) {
             // Обработчик нажатия на кнопку сохранения карточки
             btnSave.setOnClickListener {
@@ -79,12 +77,13 @@ class EditCardActivity : AppCompatActivity() {
 
                 // Создаем новую карточку
                 val newCard = Card(UUID.randomUUID().toString(), front, back, color)
-                firebaseHelper.addCard(newCard) { success ->
+                firebaseHelper.addCard(newCard, collectionId) { success ->
                     if (success) {
                         adapter.cards.add(newCard)
                         adapter.notifyItemInserted(adapter.cards.size - 1)
 
                         val intent = Intent(this, CardActivity::class.java)
+                        intent.putExtra("collectionId", collectionId)
                         startActivity(intent)
                         finish()
                     } else {
@@ -97,7 +96,7 @@ class EditCardActivity : AppCompatActivity() {
         }
         else{
             cardId?.let {
-                firebaseHelper.getCardById(it) { card ->
+                firebaseHelper.getCardById(it, collectionId) { card ->
                     if (card != null) {
                         // Редактируем существующую карточку
                         etFront.text = card.front
@@ -118,11 +117,12 @@ class EditCardActivity : AppCompatActivity() {
                             val editedCard = Card(cardId, front, back, color)
                             Log.d("Id editedCard", editedCard.id.toString())
 
-                            firebaseHelper.updateCard(editedCard) { success ->
+                            firebaseHelper.updateCard(editedCard, collectionId) { success ->
                                 if (success) {
                                     adapter.cards[position] = editedCard
                                     adapter.notifyItemChanged(position)
                                     val intent = Intent(this, CardActivity::class.java)
+                                    intent.putExtra("collectionId", collectionId)
                                     startActivity(intent)
                                     finish()
                                 } else {

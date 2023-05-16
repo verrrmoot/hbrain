@@ -46,5 +46,14 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+
+        // Добавляем обработчик для нажатия на кнопку
+        val buttoncollection = findViewById<Button>(R.id.btn_go_collections)
+
+        buttoncollection.setOnClickListener {
+            val intent = Intent(this, CollectionActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
     }
 }

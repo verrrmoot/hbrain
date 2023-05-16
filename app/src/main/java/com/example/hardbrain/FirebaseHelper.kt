@@ -6,6 +6,15 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import java.io.Serializable
 
+data class Collection(
+    var id: String? = null,
+    var name: String = "",
+    var cards: HashMap<String, Card> = hashMapOf()
+) : Serializable {
+    // Конструктор без аргументов
+    constructor() : this(null, "", hashMapOf())
+}
+
 data class Card(
     var id: String? = null,
     var front: String = "",
@@ -19,31 +28,59 @@ class FirebaseHelper {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val userId: String? = auth.currentUser?.uid
     private val cardsRef: DatabaseReference = database.getReference("users/$userId/cards")
+    private val collectionsRef: DatabaseReference = database.getReference("users/$userId/collections")
 
-    fun addCard(card: Card, callback: (Boolean) -> Unit) {
-        cardsRef.push().setValue(card)
+    fun createCollection(collectionName: String, callback: (Boolean) -> Unit) {
+        val collectionId = collectionsRef.push().key
+
+        val collection = Collection(collectionId!!, collectionName, hashMapOf())
+
+        collectionsRef.child(collectionId).setValue(collection)
+            .addOnSuccessListener { callback(true) }
+            .addOnFailureListener { exception ->
+                Log.e("Firebase", "Error creating collection", exception)
+                callback(false)
+            }
+    }
+    fun getAllCollections(callback: (MutableList<Collection>) -> Unit) {
+        collectionsRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val collections = mutableListOf<Collection>()
+                snapshot.children.forEach { child ->
+                    val collection = child.getValue(Collection::class.java)
+                    collection?.id = child.key
+                    collection?.let { collections.add(it) }
+                }
+                callback(collections)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Обработка ошибки
+            }
+        })
+    }
+
+    fun addCard(card: Card, collectionId: String, callback: (Boolean) -> Unit) {
+        getCardsRefByCollectionId(collectionId).push().setValue(card)
             .addOnSuccessListener { callback(true) }
             .addOnFailureListener { exception ->
                 Log.e("Firebase", "Error adding card", exception)
                 callback(false) }
     }
-
-    fun updateCard(card: Card, callback: (Boolean) -> Unit) {
+    fun updateCard(card: Card, collectionId: String, callback: (Boolean) -> Unit) {
         card.id?.let {
-            cardsRef.child(it).setValue(card)
+            getCardsRefByCollectionId(collectionId).child(it).setValue(card)
                 .addOnSuccessListener { callback(true) }
                 .addOnFailureListener { callback(false) }
         }
     }
-
-    fun deleteCard(cardId: String, callback: (Boolean) -> Unit) {
-        cardsRef.child(cardId).removeValue()
+    fun deleteCard(cardId: String, collectionId: String, callback: (Boolean) -> Unit) {
+        getCardsRefByCollectionId(collectionId).child(cardId).removeValue()
             .addOnSuccessListener { callback(true) }
             .addOnFailureListener { callback(false) }
     }
-
-    fun getAllCards(callback: (List<Card>) -> Unit) {
-        cardsRef.addValueEventListener(object : ValueEventListener {
+    fun getAllCards(collectionId: String, callback: (MutableList<Card>) -> Unit) {
+        getCardsRefByCollectionId(collectionId).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val cards = mutableListOf<Card>()
                 snapshot.children.forEach { child ->
@@ -53,8 +90,6 @@ class FirebaseHelper {
                 }
                 callback(cards)
             }
-
-
             override fun onCancelled(error: DatabaseError) {
                 Log.w(TAG, "loadCards:onCancelled", error.toException())
                 Log.d("FirebaseHelper", "cards: users/$userId/cards")
@@ -62,14 +97,12 @@ class FirebaseHelper {
             }
         })
     }
-
-    fun getCardById(cardId: String, callback: (Card?) -> Unit) {
-        cardsRef.child(cardId).addListenerForSingleValueEvent(object : ValueEventListener {
+    fun getCardById(cardId: String, collectionId: String, callback: (Card?) -> Unit) {
+        getCardsRefByCollectionId(collectionId).child(cardId).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val card = snapshot.getValue(Card::class.java)
                 callback(card)
             }
-
             override fun onCancelled(error: DatabaseError) {
                 Log.w(TAG, "loadCard:onCancelled", error.toException())
                 Log.d("FirebaseHelper", "cards: users/$userId/cards")
@@ -77,4 +110,7 @@ class FirebaseHelper {
         })
     }
 
+    fun getCardsRefByCollectionId(collectionId: String): DatabaseReference {
+        return database.getReference("users/$userId/collections/$collectionId/cards")
+    }
 }

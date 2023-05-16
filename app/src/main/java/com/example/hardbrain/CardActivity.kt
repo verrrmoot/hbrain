@@ -18,6 +18,7 @@ class CardActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: CardAdapter
     private lateinit var firebaseHelper: FirebaseHelper
+    private lateinit var collectionId: String
     var bool: Boolean = false
 
 
@@ -27,20 +28,25 @@ class CardActivity : AppCompatActivity() {
         setContentView(R.layout.activity_card)
 
 
+        collectionId = intent.getStringExtra("collectionId")!!
         recyclerView = findViewById(R.id.recycler_view)
-        adapter = CardAdapter(mutableListOf())
+        adapter = CardAdapter(mutableListOf(), collectionId)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
-
         firebaseHelper = FirebaseHelper()
 
 
-        // Загружаем все карточки из Firebase и отображаем их в RecyclerView
-        firebaseHelper.getAllCards { cards ->
-            adapter.cards = cards as MutableList<Card>
-            adapter.notifyItemRangeChanged(0, adapter.itemCount)
 
-        }
+        Log.d("collectionID", collectionId)
+
+
+        // Загружаем все карточки из Firebase и отображаем их в RecyclerView
+            firebaseHelper.getAllCards(collectionId) { cards ->
+                adapter.cards = cards as MutableList<Card>
+                adapter.notifyItemRangeChanged(0, adapter.itemCount)
+
+            }
+
 
 
 
@@ -49,6 +55,7 @@ class CardActivity : AppCompatActivity() {
         addCardButton.setOnClickListener {
 
             val intent = Intent(this, EditCardActivity::class.java)
+            intent.putExtra("collectionId", collectionId)
             startActivity(intent)
             finish()
         }
@@ -63,10 +70,6 @@ class CardActivity : AppCompatActivity() {
             // возвращаем true, чтобы показать контекстное меню (если оно есть)
             true
         }
-
-
-
-
     }
 
     // указание элементов меню
@@ -100,7 +103,7 @@ class CardActivity : AppCompatActivity() {
                 adapter.notifyItemRangeChanged(0, adapter.cards.size)
                 // уведомляем адаптер об изменениях в списке
                 adapter.notifyItemRemoved(position)
-                firebaseHelper.deleteCard(it) { isSuccess ->
+                firebaseHelper.deleteCard(it, collectionId) { isSuccess ->
                     if (isSuccess) {
                         Log.d("Cards1", adapter.cards.toString())
 
