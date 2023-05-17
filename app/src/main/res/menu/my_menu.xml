@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/ic_back"
+        android:title="Back"
+        android:onClick="onBackClick"
+        app:showAsAction="always" />
     <item
         android:id="@+id/delete"
         android:layout_width="wrap_content"
@@ -9,5 +18,5 @@
         android:onClick="onDeleteSelectedCardsButtonClick"
         android:title="Delete"
         android:visible="false"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 </menu>

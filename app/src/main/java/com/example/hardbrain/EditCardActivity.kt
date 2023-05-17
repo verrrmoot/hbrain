@@ -8,6 +8,8 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
@@ -116,10 +118,11 @@ class EditCardActivity : AppCompatActivity() {
                             }
                             val editedCard = Card(cardId, front, back, color)
                             Log.d("Id editedCard", editedCard.id.toString())
+                            Log.d("collectionId", collectionId)
 
                             firebaseHelper.updateCard(editedCard, collectionId) { success ->
                                 if (success) {
-                                    adapter.cards[position] = editedCard
+                                    //adapter.cards[position] = editedCard
                                     adapter.notifyItemChanged(position)
                                     val intent = Intent(this, CardActivity::class.java)
                                     intent.putExtra("collectionId", collectionId)
@@ -150,6 +153,35 @@ class EditCardActivity : AppCompatActivity() {
             R.id.btn_color_green -> ContextCompat.getColor(context, R.color.green)
             R.id.btn_color_yellow -> ContextCompat.getColor(context, R.color.yellow)
             else -> ContextCompat.getColor(context, R.color.white) // цвет по умолчанию
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.my_menu, menu)
+        return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        val deleteItem = menu.findItem(R.id.delete)
+        deleteItem.isVisible = false
+        return super.onPrepareOptionsMenu(menu)
+    }
+    fun updateOptionsMenu() {
+        invalidateOptionsMenu()
+    }
+
+    public fun onBackClick(item: MenuItem){
+        super.onBackPressed()
+        updateOptionsMenu()
+    }
+    public fun onDeleteSelectedCardsButtonClick(item: MenuItem){}
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.back -> {
+                super.onBackPressed() // Обработка нажатия кнопки "Назад"
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 

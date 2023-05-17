@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
@@ -63,6 +65,35 @@ class EditCollectionActivity: AppCompatActivity() {
             R.id.btn_color_green -> ContextCompat.getColor(context, R.color.green)
             R.id.btn_color_yellow -> ContextCompat.getColor(context, R.color.yellow)
             else -> ContextCompat.getColor(context, R.color.white) // цвет по умолчанию
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.my_menu, menu)
+        return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        val deleteItem = menu.findItem(R.id.delete)
+        deleteItem.isVisible = false
+        return super.onPrepareOptionsMenu(menu)
+    }
+    fun updateOptionsMenu() {
+        invalidateOptionsMenu()
+    }
+
+    public fun onBackClick(item: MenuItem){
+        super.onBackPressed()
+        updateOptionsMenu()
+    }
+    public fun onDeleteSelectedCardsButtonClick(item: MenuItem){}
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.back -> {
+                super.onBackPressed() // Обработка нажатия кнопки "Назад"
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 }

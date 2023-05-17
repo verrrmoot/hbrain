@@ -88,6 +88,10 @@ class CardActivity : AppCompatActivity() {
         invalidateOptionsMenu()
     }
 
+    public fun onBackClick(item: MenuItem){
+        super.onBackPressed()
+        updateOptionsMenu()
+    }
 
     // добавляем обработчик клика на кнопку удаления выбранных карточек
     public fun onDeleteSelectedCardsButtonClick(item: MenuItem) {
@@ -123,7 +127,13 @@ class CardActivity : AppCompatActivity() {
         updateOptionsMenu()
     }
 
-
-
-
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.back -> {
+                super.onBackPressed() // Обработка нажатия кнопки "Назад"
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
 }

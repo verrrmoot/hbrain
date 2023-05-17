@@ -2,6 +2,8 @@ package com.example.hardbrain
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -47,5 +49,34 @@ class CollectionActivity: AppCompatActivity() {
             finish()
         }
 
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.my_menu, menu)
+        return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        val deleteItem = menu.findItem(R.id.delete)
+        deleteItem.isVisible = false
+        return super.onPrepareOptionsMenu(menu)
+    }
+    fun updateOptionsMenu() {
+        invalidateOptionsMenu()
+    }
+
+    public fun onBackClick(item: MenuItem){
+        super.onBackPressed()
+        updateOptionsMenu()
+    }
+    public fun onDeleteSelectedCardsButtonClick(item: MenuItem){}
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.back -> {
+                super.onBackPressed() // Обработка нажатия кнопки "Назад"
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }
