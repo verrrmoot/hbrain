@@ -60,6 +60,34 @@ class FirebaseHelper {
         })
     }
 
+    fun getAllCollectionCards(callback: (List<Card>) -> Unit) {
+        collectionsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val allCards = mutableListOf<Card>()
+
+                for (collectionSnapshot in dataSnapshot.children) {
+                    val cardsSnapshot = collectionSnapshot.child("cards")
+
+                    for (cardSnapshot in cardsSnapshot.children) {
+                        val cardKey = cardSnapshot.key
+                        val front = cardSnapshot.child("front").getValue(String::class.java)
+                        val back = cardSnapshot.child("back").getValue(String::class.java)
+
+                        val card = front?.let { back?.let { it1 -> Card(cardKey, it, it1) } }
+                        card?.let { allCards.add(it) }
+                    }
+                }
+
+                callback(allCards)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Обработка ошибки получения данных
+            }
+        })
+    }
+
+
     fun addCard(card: Card, collectionId: String, callback: (Boolean) -> Unit) {
         getCardsRefByCollectionId(collectionId).push().setValue(card)
             .addOnSuccessListener { callback(true) }
