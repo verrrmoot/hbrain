@@ -68,23 +68,50 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/ca"
         android:layout_marginTop="30dp"
+        android:layout_marginHorizontal="20dp"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/btnRemember"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:text="Запомнил" />
 
         <Button
-            android:id="@+id/btnNotRemember"
-            android:layout_width="wrap_content"
+            android:id="@+id/btnOne"
+            android:layout_width="0dp"
+            android:layout_weight="0.2"
             android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:layout_marginHorizontal="25dp"
-            android:text="Не запомнил" />
+            android:layout_marginHorizontal="5dp"
+            android:text="1" />
+
+        <Button
+            android:id="@+id/btnTwo"
+            android:layout_width="0dp"
+            android:layout_weight="0.2"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp"
+            android:text="2" />
+
+        <Button
+            android:id="@+id/btnThree"
+            android:layout_width="0dp"
+            android:layout_weight="0.2"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp"
+            android:text="3" />
+
+        <Button
+            android:id="@+id/btnFour"
+            android:layout_width="0dp"
+            android:layout_weight="0.2"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp"
+            android:text="4" />
+
+        <Button
+            android:id="@+id/btnFive"
+            android:layout_width="0dp"
+            android:layout_weight="0.2"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp"
+            android:text="5" />
 
     </LinearLayout>
 

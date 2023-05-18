@@ -4,6 +4,7 @@ import android.content.ContentValues.TAG
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.google.firebase.database.ktx.getValue
 import java.io.Serializable
 
 data class Collection(
@@ -19,6 +20,10 @@ data class Card(
     var id: String? = null,
     var front: String = "",
     var back: String = "",
+    var date: String? = "",
+    var collectionId: String? = "",
+    var interval: Int = 1, //по умолчанию 0 дней
+    var factor: Double = 1.0, //изначально 1
     var color: Int = -1 // цвет по умолчанию white
 ): Serializable
 
@@ -72,8 +77,13 @@ class FirebaseHelper {
                         val cardKey = cardSnapshot.key
                         val front = cardSnapshot.child("front").getValue(String::class.java)
                         val back = cardSnapshot.child("back").getValue(String::class.java)
+                        val date = cardSnapshot.child("date").getValue(String::class.java)
+                        val collectionId = cardSnapshot.child("collectionId").getValue(String::class.java)
 
-                        val card = front?.let { back?.let { it1 -> Card(cardKey, it, it1) } }
+                        val card = front?.let { back?.let { it1 ->
+                            Card(cardKey, it,
+                                it1, date, collectionId)
+                        } }
                         card?.let { allCards.add(it) }
                     }
                 }

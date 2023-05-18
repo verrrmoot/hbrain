@@ -1,10 +1,9 @@
 package com.example.hardbrain
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,11 +13,14 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.UUID
 
 class EditCardActivity : AppCompatActivity() {
@@ -33,6 +35,7 @@ class EditCardActivity : AppCompatActivity() {
     private lateinit var btnColorGreen: Button
     private lateinit var btnColorYellow: Button
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +50,9 @@ class EditCardActivity : AppCompatActivity() {
         adapter = CardAdapter(mutableListOf(), collectionId)
         firebaseHelper = FirebaseHelper()
         var color: Int = ContextCompat.getColor(this, R.color.white) // цвет по умолчанию
+        val NowDate = LocalDate.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val dateString = NowDate.format(formatter)
 
         btnColorWhite = findViewById(R.id.btn_color_white)
         btnColorBlue = findViewById(R.id.btn_color_blue)
@@ -78,7 +84,7 @@ class EditCardActivity : AppCompatActivity() {
                 }
 
                 // Создаем новую карточку
-                val newCard = Card(UUID.randomUUID().toString(), front, back, color)
+                val newCard = Card(UUID.randomUUID().toString(), front, back, dateString, collectionId, 1, 1.0, color)
                 firebaseHelper.addCard(newCard, collectionId) { success ->
                     if (success) {
                         adapter.cards.add(newCard)
@@ -116,7 +122,7 @@ class EditCardActivity : AppCompatActivity() {
                                 Toast.makeText(this, "Заполните все поля", Toast.LENGTH_SHORT).show()
                                 return@setOnClickListener
                             }
-                            val editedCard = Card(cardId, front, back, color)
+                            val editedCard = Card(cardId, front, back, card.date, card.collectionId, card.interval, card.factor, color)
                             Log.d("Id editedCard", editedCard.id.toString())
                             Log.d("collectionId", collectionId)
 
