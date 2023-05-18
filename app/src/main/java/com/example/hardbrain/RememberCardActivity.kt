@@ -30,8 +30,6 @@ class RememberCardActivity: AppCompatActivity() {
     private lateinit var btnFour: Button
     private lateinit var btnFive: Button
     private lateinit var firebaseHelper: FirebaseHelper
-    //private lateinit var previousDateString: String
-    //private lateinit var previousDate: LocalDate
 
     private var isShowingFrontCard = true
 
@@ -42,11 +40,14 @@ class RememberCardActivity: AppCompatActivity() {
         setContentView(R.layout.remember_card)
 
         firebaseHelper = FirebaseHelper()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         // Переменная для хранения текущего индекса карточки
         var currentIndex = 0
         var rating = 0
-        //var previousInterval: Long = 0
-        //var factor: Double = 1.0
+        val currentDate = LocalDate.now() // Получаем текущую дату
+        //val currentDateString = currentDate.format(formatter)
+
+
 
 
         cardContainer = findViewById(R.id.card_container)
@@ -62,12 +63,24 @@ class RememberCardActivity: AppCompatActivity() {
 
         val flipToFrontAnimation = AnimationUtils.loadAnimation(this, R.anim.flip_to_front)
         val flipToBackAnimation = AnimationUtils.loadAnimation(this, R.anim.flip_to_back)
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-        firebaseHelper.getAllCollectionCards { cards ->
-            Log.d("cards", cards.toString())
-            // Показать первую карточку при запуске активности
-            showCardAtIndex(currentIndex, cards)
+
+        firebaseHelper.getAllCollectionCards { allCards ->
+            Log.d("cards", allCards.toString())
+            val cards = allCards.filter { card ->
+                val dateString = card.date
+                val date = LocalDate.parse(dateString, formatter)
+
+                 date <= currentDate
+            }
+
+            if (cards.isNotEmpty()) {
+                // Показать первую карточку при запуске активности
+                showCardAtIndex(currentIndex, cards)
+            }
+            else{
+                theEndToday()
+            }
 
 
             // Обработчик нажатия кнопки "0"
