@@ -18,11 +18,10 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="60dp"
         android:padding="3dp"
         app:layout_constraintBottom_toTopOf="@+id/button_save_collection"
         app:layout_constraintTop_toBottomOf="@+id/collect_name"
-        app:layout_constraintVertical_bias="1.0"
+        android:layout_marginVertical="20dp"
         tools:ignore="MissingConstraints"
         tools:layout_editor_absoluteX="24dp">
 

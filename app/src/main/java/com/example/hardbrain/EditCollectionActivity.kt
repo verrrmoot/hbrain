@@ -26,34 +26,76 @@ class EditCollectionActivity: AppCompatActivity() {
         adapter = CollectionAdapter(mutableListOf())
         firebaseHelper = FirebaseHelper()
 
+        val isNewCollection = intent.getBooleanExtra("isNewCollection", true)
+        val position = intent.getIntExtra("position", -1)
+        val collectionId = intent.getStringExtra("collection_id")
+
         val btnSave = findViewById<Button>(R.id.button_save_collection)
         val colName = findViewById<TextView>(R.id.collect_name)
 
-        btnSave.setOnClickListener {
-            // Считываем данные из полей формы
-            val name = colName.text.toString().trim()
+        if (isNewCollection) {
+            // Обработчик нажатия на кнопку сохранения
+            btnSave.setOnClickListener {
+                // Считываем данные из полей формы
+                val name = colName.text.toString().trim()
 
-            // Проверяем, что оба поля заполнены
-            if (name.isEmpty()) {
-                Toast.makeText(this, "Заполните пустое поле", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+                // Проверяем, что оба поля заполнены
+                if (name.isEmpty()) {
+                    Toast.makeText(this, "Заполните пустое поле", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
 
-            // Создаем новую карточку
-            val newCollection = Collection(UUID.randomUUID().toString(), name, hashMapOf())
-            firebaseHelper.createCollection(name) { success ->
-                if (success) {
-                    //adapter.cards.add(newCard)
-                    adapter.notifyItemInserted(adapter.collections.size - 1)
-
-                    val intent = Intent(this, CollectionActivity::class.java)
-                    startActivity(intent)
-                    finish()
-                } else {
-                    Toast.makeText(this, "Ошибка при добавлении карточки", Toast.LENGTH_SHORT)
-                        .show()
+                // Создаем новую карточку
+                val newCollection = Collection(UUID.randomUUID().toString(), name, hashMapOf())
+                firebaseHelper.createCollection(name) { success ->
+                    if (success) {
+                        adapter.notifyItemInserted(adapter.collections.size - 1)
+                        val intent = Intent(this, CollectionActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    } else {
+                        Toast.makeText(this, "Ошибка при добавлении карточки", Toast.LENGTH_SHORT)
+                            .show()
+                    }
                 }
             }
+        }
+        else{
+            collectionId?.let {
+                firebaseHelper.getCollectionById(it){collection ->
+                    if (collection != null) {
+                        // Редактируем существующую коллекцию
+                        colName.text = collection.name
+
+                        btnSave.setOnClickListener {
+                            // Считываем данные из полей формы
+                            val name = colName.text.toString().trim()
+
+                            // Проверяем, что оба поля заполнены
+                            if (name.isEmpty()) {
+                                Toast.makeText(this, "Заполните пустое поле", Toast.LENGTH_SHORT).show()
+                                return@setOnClickListener
+                            }
+
+                            // Создаем новую карточку
+                            val editCollection = Collection(collectionId, name, collection.cards)
+                            firebaseHelper.updateCollection(editCollection) { success ->
+                                if (success) {
+                                    adapter.notifyItemChanged(position)
+                                    val intent = Intent(this, CollectionActivity::class.java)
+                                    startActivity(intent)
+                                    finish()
+                                } else {
+                                    Toast.makeText(this, "Ошибка при добавлении карточки", Toast.LENGTH_SHORT)
+                                        .show()
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+
         }
 
     }
@@ -67,7 +109,6 @@ class EditCollectionActivity: AppCompatActivity() {
             else -> ContextCompat.getColor(context, R.color.white) // цвет по умолчанию
         }
     }
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.my_menu, menu)
         return true

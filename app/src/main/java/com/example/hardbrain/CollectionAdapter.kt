@@ -26,6 +26,12 @@ import kotlin.properties.Delegates
 
 class CollectionAdapter(var collections: MutableList<Collection>) : RecyclerView.Adapter<CollectionAdapter.CollectionViewHolder>() {
 
+    val selectedCollections = mutableListOf<Collection>()
+    private var longClickListener: ((Collection, CollectionAdapter.CollectionViewHolder) -> Unit)? = null
+
+    fun setOnLongClickListener(listener: (Collection, CollectionViewHolder) -> Unit) {
+        longClickListener = listener
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CollectionViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.collection_card, parent, false)
@@ -50,15 +56,67 @@ class CollectionAdapter(var collections: MutableList<Collection>) : RecyclerView
             // Запуск CardActivity
             holder.itemView.context.startActivity(intent)
         }
+
+        holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
+            val collectionbox = collections[position]
+            if (isChecked) {
+                selectedCollections.add(collectionbox)
+            } else {
+                selectedCollections.remove(collectionbox)
+            }
+        }
+
+        holder.editIcon.setOnClickListener {
+            val intent = Intent(holder.itemView.context.applicationContext, EditCollectionActivity::class.java)
+            intent.putExtra("collection_id", collections[position].id)
+            intent.putExtra("isNewCollection", false) // передача флага
+            intent.putExtra("position", position)
+            (holder.itemView.context as Activity).startActivityForResult(intent,EDIT_REQUEST_CODE)
+        }
     }
 
     inner class CollectionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val tvCollectionName: TextView = itemView.findViewById(R.id.collection_name)
+        val checkBox: CheckBox = itemView.findViewById(R.id.checkbox)
+        val editIcon: ImageView = itemView.findViewById(R.id.edit_icon)
 
         fun bind(collection: Collection) {
             tvCollectionName.text = collection.name
-
         }
+
+        init {
+            itemView.setOnLongClickListener {
+                longClickListener?.invoke(collections[adapterPosition], this)
+                true
+            }
+        }
+    }
+
+    fun showCheckBoxes(recyclerView: RecyclerView) {
+        for (i in collections.indices) {
+            val viewHolder = recyclerView.findViewHolderForAdapterPosition(i) as? CollectionAdapter.CollectionViewHolder
+            viewHolder?.checkBox?.visibility = View.VISIBLE
+        }
+    }
+
+    fun hideCheckBoxes(recyclerView: RecyclerView) {
+        for (i in collections.indices) {
+            val viewHolder = recyclerView.findViewHolderForAdapterPosition(i) as? CollectionAdapter.CollectionViewHolder
+            viewHolder?.checkBox?.visibility = View.INVISIBLE
+        }
+    }
+
+    fun getPosition(collection: Collection): Int {
+        for (i in collections.indices) {
+            if (collections[i] == collection) {
+                return i
+            }
+        }
+        return -1
+    }
+
+    companion object {
+        const val EDIT_REQUEST_CODE = 123
     }
 
     fun updateCollections(newCollections: List<Collection>) {

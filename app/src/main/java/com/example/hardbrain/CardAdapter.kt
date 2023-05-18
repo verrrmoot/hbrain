@@ -35,9 +35,6 @@ class CardAdapter(var cards: MutableList<Card>, private val collectionId: String
        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_card, parent, false)
         val actiview = LayoutInflater.from(parent.context).inflate(R.layout.activity_card, parent, false)
-
-
-
         return CardViewHolder(view,actiview)
     }
 
@@ -107,8 +104,6 @@ class CardAdapter(var cards: MutableList<Card>, private val collectionId: String
         holder.tvFront.setBackgroundColor(Color.parseColor(hexColor))
     }
 
-
-
     inner class CardViewHolder(itemView: View, actiview: View) : RecyclerView.ViewHolder(itemView) {
         val tvFront: TextView = itemView.findViewById(R.id.tv_front)
         val tvBack: TextView = itemView.findViewById(R.id.tv_back)
@@ -151,12 +146,7 @@ class CardAdapter(var cards: MutableList<Card>, private val collectionId: String
         return -1
     }
 
-
     companion object {
         const val EDIT_REQUEST_CODE = 123
     }
-
-
-
-
 }

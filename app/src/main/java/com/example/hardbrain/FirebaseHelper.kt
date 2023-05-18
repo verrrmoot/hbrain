@@ -32,7 +32,6 @@ class FirebaseHelper {
     private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val userId: String? = auth.currentUser?.uid
-    private val cardsRef: DatabaseReference = database.getReference("users/$userId/cards")
     private val collectionsRef: DatabaseReference = database.getReference("users/$userId/collections")
 
     fun createCollection(collectionName: String, callback: (Boolean) -> Unit) {
@@ -61,6 +60,33 @@ class FirebaseHelper {
 
             override fun onCancelled(error: DatabaseError) {
                 // Обработка ошибки
+            }
+        })
+    }
+
+    fun deleteCollections(collectionId: String, callback: (Boolean) -> Unit) {
+        collectionsRef.child(collectionId).removeValue()
+            .addOnSuccessListener { callback(true) }
+            .addOnFailureListener { callback(false) }
+    }
+
+    fun updateCollection(collection: Collection, callback: (Boolean) -> Unit) {
+        collection.id?.let {
+            collectionsRef.child(it).setValue(collection)
+                .addOnSuccessListener { callback(true) }
+                .addOnFailureListener { callback(false) }
+        }
+    }
+
+    fun getCollectionById(collectionId: String, callback: (Collection?) -> Unit) {
+        collectionsRef.child(collectionId).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val collection = snapshot.getValue(Collection::class.java)
+                callback(collection)
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Log.w(TAG, "loadCard:onCancelled", error.toException())
+                Log.d("FirebaseHelper", "cards: users/$userId/cards")
             }
         })
     }
