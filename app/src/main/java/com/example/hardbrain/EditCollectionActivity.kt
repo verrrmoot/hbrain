@@ -19,6 +19,12 @@ class EditCollectionActivity: AppCompatActivity() {
     private lateinit var adapter: CollectionAdapter
     private lateinit var firebaseHelper: FirebaseHelper
 
+    private lateinit var btnColorWhite: Button
+    private lateinit var btnColorBlue: Button
+    private lateinit var btnColorRed: Button
+    private lateinit var btnColorGreen: Button
+    private lateinit var btnColorYellow: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_collection)
@@ -30,8 +36,21 @@ class EditCollectionActivity: AppCompatActivity() {
         val position = intent.getIntExtra("position", -1)
         val collectionId = intent.getStringExtra("collection_id")
 
+        btnColorWhite = findViewById(R.id.btn_color_white)
+        btnColorBlue = findViewById(R.id.btn_color_blue)
+        btnColorRed = findViewById(R.id.btn_color_red)
+        btnColorGreen = findViewById(R.id.btn_color_green)
+        btnColorYellow = findViewById(R.id.btn_color_yellow)
+
         val btnSave = findViewById<Button>(R.id.button_save_collection)
         val colName = findViewById<TextView>(R.id.collect_name)
+        var color: Int = ContextCompat.getColor(this, R.color.white) // цвет по умолчанию
+
+        btnColorWhite.setOnClickListener { color = getColorByButton(it, this) }
+        btnColorBlue.setOnClickListener { color = getColorByButton(it, this) }
+        btnColorRed.setOnClickListener { color = getColorByButton(it, this) }
+        btnColorGreen.setOnClickListener { color = getColorByButton(it, this) }
+        btnColorYellow.setOnClickListener { color = getColorByButton(it, this) }
 
         if (isNewCollection) {
             // Обработчик нажатия на кнопку сохранения
@@ -46,7 +65,7 @@ class EditCollectionActivity: AppCompatActivity() {
                 }
 
                 // Создаем новую карточку
-                val newCollection = Collection(UUID.randomUUID().toString(), name, hashMapOf())
+                val newCollection = Collection(UUID.randomUUID().toString(), name, false, color, hashMapOf())
                 firebaseHelper.createCollection(name) { success ->
                     if (success) {
                         adapter.notifyItemInserted(adapter.collections.size - 1)
@@ -66,6 +85,7 @@ class EditCollectionActivity: AppCompatActivity() {
                     if (collection != null) {
                         // Редактируем существующую коллекцию
                         colName.text = collection.name
+                        color = collection.color
 
                         btnSave.setOnClickListener {
                             // Считываем данные из полей формы
@@ -78,7 +98,7 @@ class EditCollectionActivity: AppCompatActivity() {
                             }
 
                             // Создаем новую карточку
-                            val editCollection = Collection(collectionId, name, collection.cards)
+                            val editCollection = Collection(collectionId, name, collection.pressed, color, collection.cards)
                             firebaseHelper.updateCollection(editCollection) { success ->
                                 if (success) {
                                     adapter.notifyItemChanged(position)

@@ -10,10 +10,12 @@ import java.io.Serializable
 data class Collection(
     var id: String? = null,
     var name: String = "",
+    var pressed: Boolean = false,
+    var color: Int = -1, // цвет по умолчанию white
     var cards: HashMap<String, Card> = hashMapOf()
 ) : Serializable {
     // Конструктор без аргументов
-    constructor() : this(null, "", hashMapOf())
+    constructor() : this(null, "",false, -1, hashMapOf())
 }
 
 data class Card(
@@ -37,7 +39,7 @@ class FirebaseHelper {
     fun createCollection(collectionName: String, callback: (Boolean) -> Unit) {
         val collectionId = collectionsRef.push().key
 
-        val collection = Collection(collectionId!!, collectionName, hashMapOf())
+        val collection = Collection(collectionId!!, collectionName, false, -1, hashMapOf())
 
         collectionsRef.child(collectionId).setValue(collection)
             .addOnSuccessListener { callback(true) }
@@ -115,6 +117,28 @@ class FirebaseHelper {
                 }
 
                 callback(allCards)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Обработка ошибки получения данных
+            }
+        })
+    }
+
+    fun getPressedCollectionsIds(callback: (List<String>) -> Unit) {
+        collectionsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val pressedCollectionsIds = mutableListOf<String>()
+
+                for (collectionSnapshot in dataSnapshot.children) {
+                    val isPressed = collectionSnapshot.child("pressed").getValue(Boolean::class.java)
+                    if (isPressed == true) {
+                        val collectionId = collectionSnapshot.key
+                        collectionId?.let { pressedCollectionsIds.add(it) }
+                    }
+                }
+
+                callback(pressedCollectionsIds)
             }
 
             override fun onCancelled(databaseError: DatabaseError) {

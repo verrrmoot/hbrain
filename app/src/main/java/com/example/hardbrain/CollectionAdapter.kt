@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.CheckBox
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -42,9 +43,16 @@ class CollectionAdapter(var collections: MutableList<Collection>) : RecyclerView
 
     override fun onBindViewHolder(holder: CollectionViewHolder, position: Int) {
         val collection = collections[position]
+        var isPressed = collection.pressed
+        if (isPressed){
+            holder.btnPressed.setImageResource(R.drawable.ic_pressed)
+        }
+        else{
+            holder.btnPressed.setImageResource(R.drawable.ic_unpressed)
+        }
         holder.bind(collection)
 
-        // Настройка обработчика нажатия на CardView
+        // Настройка обработчика нажатия на CollectionView
         holder.itemView.setOnClickListener {
             // Создание Intent для перехода на CardActivity
             val intent = Intent(holder.itemView.context, CardActivity::class.java)
@@ -73,12 +81,38 @@ class CollectionAdapter(var collections: MutableList<Collection>) : RecyclerView
             intent.putExtra("position", position)
             (holder.itemView.context as Activity).startActivityForResult(intent,EDIT_REQUEST_CODE)
         }
+
+        holder.btnPressed.setOnClickListener{
+            if (isPressed) {
+                holder.btnPressed.setImageResource(R.drawable.ic_unpressed)
+            } else {
+                holder.btnPressed.setImageResource(R.drawable.ic_pressed)
+            }
+            isPressed = !isPressed
+            val editCollection = Collection(collection.id, collection.name, isPressed, collection.color, collection.cards)
+            holder.firebaseHelper.updateCollection(editCollection){success ->
+                if (success) {
+                    notifyItemChanged(position)
+                } else {
+                    Log.d("edit isPressed", "Что-то пошло не так!!!")
+                }
+
+            }
+        }
+
+        val hexColor = "#" + Integer.toHexString(collection.color)
+        holder.collectionView.setCardBackgroundColor(Color.parseColor(hexColor))
+        holder.tvCollectionName.setBackgroundColor(Color.parseColor(hexColor))
+        holder.btnPressed.setBackgroundColor(Color.parseColor(hexColor))
     }
 
     inner class CollectionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val tvCollectionName: TextView = itemView.findViewById(R.id.collection_name)
+        val tvCollectionName: TextView = itemView.findViewById(R.id.collection_name)
         val checkBox: CheckBox = itemView.findViewById(R.id.checkbox)
         val editIcon: ImageView = itemView.findViewById(R.id.edit_icon)
+        val btnPressed: ImageButton = itemView.findViewById((R.id.show_collection_cards))
+        var firebaseHelper = FirebaseHelper()
+        val collectionView = itemView.findViewById<CardView>(R.id.my_card_view)
 
         fun bind(collection: Collection) {
             tvCollectionName.text = collection.name

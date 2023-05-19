@@ -14,14 +14,42 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.75"
-            android:orientation="vertical">
+            android:layout_gravity="end"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/show_collection_cards"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_unpressed"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:background="@color/white"
+                android:contentDescription="TODO" />
+
+            <ImageView
+                android:id="@+id/edit_icon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/ic_edit" />
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
 
             <TextView
                 android:id="@+id/collection_name"
@@ -30,26 +58,9 @@
                 android:layout_margin="5dp"
                 android:minHeight="40dp"
                 android:minLines="1"
+                android:layout_weight="0.75"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
                 android:textSize="20sp" />
-
-
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="end"
-            android:orientation="vertical">
-
-            <ImageView
-                android:id="@+id/edit_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="10dp"
-                android:src="@drawable/ic_edit" />
 
             <CheckBox
                 android:id="@+id/checkbox"

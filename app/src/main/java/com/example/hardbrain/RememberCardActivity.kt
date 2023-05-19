@@ -47,10 +47,6 @@ class RememberCardActivity: AppCompatActivity() {
         var currentIndex = 0
         var rating = 0
         val currentDate = LocalDate.now() // Получаем текущую дату
-        //val currentDateString = currentDate.format(formatter)
-
-
-
 
         cardContainer = findViewById(R.id.card_container)
         frontCard = findViewById(R.id.front_card)
@@ -66,79 +62,86 @@ class RememberCardActivity: AppCompatActivity() {
         val flipToFrontAnimation = AnimationUtils.loadAnimation(this, R.anim.flip_to_front)
         val flipToBackAnimation = AnimationUtils.loadAnimation(this, R.anim.flip_to_back)
 
+        val collectionsPressed =
 
         firebaseHelper.getAllCollectionCards { allCards ->
             Log.d("cards", allCards.toString())
-            val cards = allCards.filter { card ->
+            val cardsDate = allCards.filter { card ->
                 val dateString = card.date
                 val date = LocalDate.parse(dateString, formatter)
-
                  date <= currentDate
             }
 
-            if (cards.isNotEmpty()) {
-                // Показать первую карточку при запуске активности
-                showCardAtIndex(currentIndex, cards)
-            }
-            else{
-                theEndToday()
-            }
+            firebaseHelper.getPressedCollectionsIds { pressedCollectionsIds ->
+                Log.d("pressedCollectionsIds", pressedCollectionsIds.toString())
+                    val cards = cardsDate.filter { card ->
+                        pressedCollectionsIds.contains(card.collectionId)
+                    }
+                Log.d("cardsPressed", cards.toString())
+
+                if (cards.isNotEmpty()) {
+                    // Показать первую карточку при запуске активности
+                    showCardAtIndex(currentIndex, cards)
+                } else {
+                    theEndToday()
+                }
 
 
-            // Обработчик нажатия кнопки "0"
-            btnOne.setOnClickListener {
-                rating = 1
-                updateDate(cards[currentIndex], formatter, rating)
-                currentIndex++
-                if (currentIndex < cards.size) {
-                    showCardAtIndex(currentIndex,cards)
-                } else {
-                    theEndToday()
+                // Обработчик нажатия кнопки "0"
+                btnOne.setOnClickListener {
+                    rating = 1
+                    updateDate(cards[currentIndex], formatter, rating)
+                    currentIndex++
+                    if (currentIndex < cards.size) {
+                        showCardAtIndex(currentIndex, cards)
+                    } else {
+                        theEndToday()
+                    }
                 }
-            }
 
-            // Обработчик нажатия кнопки "2"
-            btnTwo.setOnClickListener {
-                rating = 2
-                updateDate(cards[currentIndex], formatter, rating)
-                currentIndex++
-                if (currentIndex < cards.size) {
-                    showCardAtIndex(currentIndex, cards)
-                } else {
-                    theEndToday()
+                // Обработчик нажатия кнопки "2"
+                btnTwo.setOnClickListener {
+                    rating = 2
+                    updateDate(cards[currentIndex], formatter, rating)
+                    currentIndex++
+                    if (currentIndex < cards.size) {
+                        showCardAtIndex(currentIndex, cards)
+                    } else {
+                        theEndToday()
+                    }
                 }
-            }
-            // Обработчик нажатия кнопки "3"
-            btnThree.setOnClickListener {
-                rating = 3
-                updateDate(cards[currentIndex], formatter, rating)
-                currentIndex++
-                if (currentIndex < cards.size) {
-                    showCardAtIndex(currentIndex, cards)
-                } else {
-                    theEndToday()
+                // Обработчик нажатия кнопки "3"
+                btnThree.setOnClickListener {
+                    rating = 3
+                    updateDate(cards[currentIndex], formatter, rating)
+                    currentIndex++
+                    if (currentIndex < cards.size) {
+                        showCardAtIndex(currentIndex, cards)
+                    } else {
+                        theEndToday()
+                    }
                 }
-            }
-            // Обработчик нажатия кнопки "4"
-            btnFour.setOnClickListener {
-                rating = 4
-                updateDate(cards[currentIndex], formatter, rating)
-                currentIndex++
-                if (currentIndex < cards.size) {
-                    showCardAtIndex(currentIndex, cards)
-                } else {
-                    theEndToday()
+                // Обработчик нажатия кнопки "4"
+                btnFour.setOnClickListener {
+                    rating = 4
+                    updateDate(cards[currentIndex], formatter, rating)
+                    currentIndex++
+                    if (currentIndex < cards.size) {
+                        showCardAtIndex(currentIndex, cards)
+                    } else {
+                        theEndToday()
+                    }
                 }
-            }
-            // Обработчик нажатия кнопки "5"
-            btnFive.setOnClickListener {
-                rating = 5
-                updateDate(cards[currentIndex], formatter, rating)
-                currentIndex++
-                if (currentIndex < cards.size) {
-                    showCardAtIndex(currentIndex, cards)
-                } else {
-                    theEndToday()
+                // Обработчик нажатия кнопки "5"
+                btnFive.setOnClickListener {
+                    rating = 5
+                    updateDate(cards[currentIndex], formatter, rating)
+                    currentIndex++
+                    if (currentIndex < cards.size) {
+                        showCardAtIndex(currentIndex, cards)
+                    } else {
+                        theEndToday()
+                    }
                 }
             }
         }
