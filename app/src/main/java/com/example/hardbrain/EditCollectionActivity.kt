@@ -44,7 +44,7 @@ class EditCollectionActivity: AppCompatActivity() {
 
         val btnSave = findViewById<Button>(R.id.button_save_collection)
         val colName = findViewById<TextView>(R.id.collect_name)
-        var color: Int = ContextCompat.getColor(this, R.color.white) // цвет по умолчанию
+        var color: Int = ContextCompat.getColor(this, R.color.red) // цвет по умолчанию
 
         btnColorWhite.setOnClickListener { color = getColorByButton(it, this) }
         btnColorBlue.setOnClickListener { color = getColorByButton(it, this) }
@@ -66,7 +66,7 @@ class EditCollectionActivity: AppCompatActivity() {
 
                 // Создаем новую карточку
                 val newCollection = Collection(UUID.randomUUID().toString(), name, false, color, hashMapOf())
-                firebaseHelper.createCollection(name) { success ->
+                firebaseHelper.createCollection(newCollection) { success ->
                     if (success) {
                         adapter.notifyItemInserted(adapter.collections.size - 1)
                         val intent = Intent(this, CollectionActivity::class.java)

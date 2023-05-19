@@ -36,17 +36,12 @@ class FirebaseHelper {
     private val userId: String? = auth.currentUser?.uid
     private val collectionsRef: DatabaseReference = database.getReference("users/$userId/collections")
 
-    fun createCollection(collectionName: String, callback: (Boolean) -> Unit) {
-        val collectionId = collectionsRef.push().key
-
-        val collection = Collection(collectionId!!, collectionName, false, -1, hashMapOf())
-
-        collectionsRef.child(collectionId).setValue(collection)
+    fun createCollection(collection: Collection, callback: (Boolean) -> Unit) {
+        collectionsRef.push().setValue(collection)
             .addOnSuccessListener { callback(true) }
             .addOnFailureListener { exception ->
-                Log.e("Firebase", "Error creating collection", exception)
-                callback(false)
-            }
+                Log.e("Firebase", "Error adding collection", exception)
+                callback(false) }
     }
     fun getAllCollections(callback: (MutableList<Collection>) -> Unit) {
         collectionsRef.addValueEventListener(object : ValueEventListener {
