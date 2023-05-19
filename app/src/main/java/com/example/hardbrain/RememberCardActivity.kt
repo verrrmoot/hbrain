@@ -1,6 +1,7 @@
 package com.example.hardbrain
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -249,14 +250,19 @@ class RememberCardActivity: AppCompatActivity() {
     }
 
     public fun onBackClick(item: MenuItem){
-        super.onBackPressed()
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        finish()
         updateOptionsMenu()
     }
     public fun onDeleteSelectedCardsButtonClick(item: MenuItem){}
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.back -> {
-                super.onBackPressed() // Обработка нажатия кнопки "Назад"
+                // Обработка нажатия кнопки "Назад"
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+                finish()
                 true
             }
             else -> super.onOptionsItemSelected(item)

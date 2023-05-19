@@ -75,7 +75,9 @@ class CardActivity : AppCompatActivity() {
     }
 
     public fun onBackClick(item: MenuItem){
-        super.onBackPressed()
+        val intent = Intent(this, CollectionActivity::class.java)
+        startActivity(intent)
+        finish()
         updateOptionsMenu()
     }
 
@@ -116,7 +118,10 @@ class CardActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.back -> {
-                super.onBackPressed() // Обработка нажатия кнопки "Назад"
+                // Обработка нажатия кнопки "Назад"
+                val intent = Intent(this, CollectionActivity::class.java)
+                startActivity(intent)
+                finish()
                 true
             }
             else -> super.onOptionsItemSelected(item)
