@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#FAE5D3">
 
 
     <EditText
@@ -11,19 +12,26 @@
         android:layout_width="match_parent"
         android:layout_height="189dp"
         android:layout_marginTop="44dp"
-        android:hint="Front side"
+        android:hint="Лицевая сторона"
+        android:padding="10dp"
+        android:textColor="#FF7F50"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="16dp" />
+        tools:layout_editor_absoluteX="16dp"
+        android:background="@drawable/edittext_border"
+        />
 
     <EditText
         android:id="@+id/edit_text_back"
         android:layout_width="match_parent"
         android:layout_height="178dp"
-        android:hint="Back side"
+        android:padding="10dp"
+        android:hint="Обратная сторона"
+        android:textColor="#FF7F50"
         app:layout_constraintBottom_toTopOf="@+id/button_save_card"
         app:layout_constraintTop_toBottomOf="@+id/edit_text_front"
         app:layout_constraintVertical_bias="0.244"
-        tools:layout_editor_absoluteX="0dp" />
+        tools:layout_editor_absoluteX="0dp"
+        android:background="@drawable/edittext_border"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -86,14 +94,16 @@
 
     <Button
         android:id="@+id/button_save_card"
-        android:layout_width="111dp"
+        android:layout_width="wrap_content"
         android:layout_height="79dp"
         android:layout_marginBottom="30dp"
-        android:text="Save"
+        android:backgroundTint="#FFA07A"
+        android:text="Сохранить"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edit_text_front"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.958" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
 
         // Находим кнопку в макете
         val button = findViewById<Button>(R.id.btn_go_to_login)
+        button.alpha = 0.5f
 
         // Добавляем обработчик для нажатия на кнопку
         button.setOnClickListener {
@@ -40,6 +41,7 @@ class MainActivity : AppCompatActivity() {
 
         // Добавляем обработчик для нажатия на кнопку
         val buttoncard = findViewById<Button>(R.id.btn_go_cards)
+        buttoncard.alpha = 0.5f
 
         buttoncard.setOnClickListener {
             val intent = Intent(this, RememberCardActivity::class.java)
@@ -49,6 +51,7 @@ class MainActivity : AppCompatActivity() {
 
         // Добавляем обработчик для нажатия на кнопку
         val buttoncollection = findViewById<Button>(R.id.btn_go_collections)
+        buttoncollection.alpha = 0.5f
 
         buttoncollection.setOnClickListener {
             val intent = Intent(this, CollectionActivity::class.java)

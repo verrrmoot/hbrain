@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#FAE5D3">
 
     <EditText
         android:id="@+id/collect_name"
@@ -12,7 +13,10 @@
         android:layout_marginTop="44dp"
         android:hint="Collection name"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="16dp" />
+        tools:layout_editor_absoluteX="16dp"
+        android:textColor="#FF7F50"
+        android:padding="10dp"
+        android:background="@drawable/edittext_border"/>
 
 
     <LinearLayout
@@ -77,10 +81,11 @@
 
     <Button
         android:id="@+id/button_save_collection"
-        android:layout_width="111dp"
+        android:layout_width="wrap_content"
         android:layout_height="79dp"
         android:layout_marginBottom="236dp"
-        android:text="Save"
+        android:backgroundTint="#FFA07A"
+        android:text="Сохранить"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

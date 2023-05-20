@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#FAE5D3"
     tools:context=".CardActivity">
 
     <androidx.cardview.widget.CardView
@@ -36,7 +37,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="Front Side"
+                    android:hint="Лицевая сторона"
                     android:textSize="20sp" />
 
             </FrameLayout>
@@ -54,7 +55,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="Back Side"
+                    android:hint="Обратная сторона"
                     android:textSize="20sp" />
 
             </FrameLayout>
@@ -79,6 +80,7 @@
             android:layout_weight="0.2"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="5dp"
+            android:backgroundTint="#FFA07A"
             android:text="1" />
 
         <Button
@@ -87,6 +89,7 @@
             android:layout_weight="0.2"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="5dp"
+            android:backgroundTint="#FFA07A"
             android:text="2" />
 
         <Button
@@ -95,6 +98,7 @@
             android:layout_weight="0.2"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="5dp"
+            android:backgroundTint="#FFA07A"
             android:text="3" />
 
         <Button
@@ -103,6 +107,7 @@
             android:layout_weight="0.2"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="5dp"
+            android:backgroundTint="#FFA07A"
             android:text="4" />
 
         <Button
@@ -111,6 +116,7 @@
             android:layout_weight="0.2"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="5dp"
+            android:backgroundTint="#FFA07A"
             android:text="5" />
 
     </LinearLayout>

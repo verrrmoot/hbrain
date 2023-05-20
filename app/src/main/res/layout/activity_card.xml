@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
+    android:background="#FAE5D3"
     android:padding="6dp">
 
 
@@ -26,7 +27,7 @@
                 android:layout_gravity="end"
                 android:layout_marginTop="16dp"
                 android:src="@drawable/ic_add"
-                app:backgroundTint="@color/blue"
+                app:backgroundTint="#FFA07A"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:contentDescription="TODO" />
