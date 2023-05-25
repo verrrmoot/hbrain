@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background = "@color/divider_color"
+    android:textColor = "@color/menu_color"
+    >
 
     <item
         android:id="@+id/back"
@@ -9,7 +12,9 @@
         android:icon="@drawable/ic_back"
         android:title="Back"
         android:onClick="onBackClick"
-        app:showAsAction="always" />
+        app:showAsAction="always"
+        android:background = "@color/divider_color"
+        />
     <item
         android:id="@+id/delete"
         android:layout_width="wrap_content"
@@ -18,5 +23,6 @@
         android:onClick="onDeleteSelectedCardsButtonClick"
         android:title="Delete"
         android:visible="false"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom"
+        android:background = "@color/divider_color"/>
 </menu>

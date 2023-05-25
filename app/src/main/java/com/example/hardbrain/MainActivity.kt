@@ -15,6 +15,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        setTheme(R.style.AppTheme)
+
         // Получение данных об учетной записи Google
         val account = GoogleSignIn.getLastSignedInAccount(this)
         if (account != null) {
@@ -55,6 +57,16 @@ class MainActivity : AppCompatActivity() {
 
         buttoncollection.setOnClickListener {
             val intent = Intent(this, CollectionActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
+        // Добавляем обработчик для нажатия на кнопку
+        val buttonplay = findViewById<Button>(R.id.btn_go_play)
+        buttoncollection.alpha = 0.5f
+
+        buttonplay.setOnClickListener {
+            val intent = Intent(this, PlayCardActivity::class.java)
             startActivity(intent)
             finish()
         }

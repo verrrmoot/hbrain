@@ -22,6 +22,8 @@ class CollectionActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_collections)
 
+        setTheme(R.style.AppTheme)
+
         recyclerView = findViewById(R.id.recycler_view)
         adapter = CollectionAdapter(mutableListOf())
         recyclerView.adapter = adapter
@@ -56,6 +58,7 @@ class CollectionActivity: AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.my_menu, menu)
+        setTheme(R.style.AppTheme)
         return true
     }
 

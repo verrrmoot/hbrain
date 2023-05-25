@@ -24,6 +24,8 @@ class CardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_card)
 
+        setTheme(R.style.AppTheme)
+
         collectionId = intent.getStringExtra("collectionId")!!
         recyclerView = findViewById(R.id.recycler_view)
         adapter = CardAdapter(mutableListOf(), collectionId)
