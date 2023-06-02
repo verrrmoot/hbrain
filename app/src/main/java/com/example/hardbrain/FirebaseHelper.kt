@@ -35,6 +35,39 @@ class FirebaseHelper {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val userId: String? = auth.currentUser?.uid
     private val collectionsRef: DatabaseReference = database.getReference("users/$userId/collections")
+    private val shareRef: DatabaseReference = database.getReference("shareCollections")
+
+    fun shareCollection(collection: Collection, callback: (Boolean) -> Unit) {
+        shareRef.push().setValue(collection)
+            .addOnSuccessListener { callback(true) }
+            .addOnFailureListener { exception ->
+                Log.e("Firebase", "Error adding collection", exception)
+                callback(false) }
+    }
+
+    fun getShareCollections(callback: (MutableList<Collection>) -> Unit) {
+        shareRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val collections = mutableListOf<Collection>()
+                snapshot.children.forEach { child ->
+                    val collection = child.getValue(Collection::class.java)
+                    collection?.id = child.key
+                    collection?.let { collections.add(it) }
+                }
+                callback(collections)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Обработка ошибки
+            }
+        })
+    }
+
+    fun deleteShare(collectionId: String, callback: (Boolean) -> Unit) {
+        shareRef.child(collectionId).removeValue()
+            .addOnSuccessListener { callback(true) }
+            .addOnFailureListener { callback(false) }
+    }
 
     fun createCollection(collection: Collection, callback: (Boolean) -> Unit) {
         collectionsRef.push().setValue(collection)

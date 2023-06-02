@@ -82,6 +82,17 @@ class CollectionAdapter(var collections: MutableList<Collection>) : RecyclerView
             (holder.itemView.context as Activity).startActivityForResult(intent,EDIT_REQUEST_CODE)
         }
 
+        holder.shareIcon.setOnClickListener {
+            val sharedCollection = Collection(collection.id, collection.name, isPressed, collection.color, collection.cards)
+            holder.firebaseHelper.shareCollection(sharedCollection) { success ->
+                if (success) {
+                    Log.d("share collection", "success share")
+                } else {
+                    Log.d("share collection", "error")
+                }
+            }
+        }
+
         holder.btnPressed.setOnClickListener{
             if (isPressed) {
                 holder.btnPressed.setImageResource(R.drawable.ic_unpressed)
@@ -96,7 +107,6 @@ class CollectionAdapter(var collections: MutableList<Collection>) : RecyclerView
                 } else {
                     Log.d("edit isPressed", "Что-то пошло не так!!!")
                 }
-
             }
         }
 
@@ -110,6 +120,7 @@ class CollectionAdapter(var collections: MutableList<Collection>) : RecyclerView
         val tvCollectionName: TextView = itemView.findViewById(R.id.collection_name)
         val checkBox: CheckBox = itemView.findViewById(R.id.checkbox)
         val editIcon: ImageView = itemView.findViewById(R.id.edit_icon)
+        val shareIcon: ImageView = itemView.findViewById(R.id.share_icon)
         val btnPressed: ImageButton = itemView.findViewById((R.id.show_collection_cards))
         var firebaseHelper = FirebaseHelper()
         val collectionView = itemView.findViewById<CardView>(R.id.my_card_view)

@@ -2,7 +2,7 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/my_card_view"
+    android:id="@+id/share_card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:maxHeight="200dp"
@@ -23,31 +23,24 @@
             android:layout_gravity="end"
             android:orientation="horizontal">
 
+            <ImageView
+                android:id="@+id/delete_icon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:visibility="gone"
+                android:src="@drawable/ic_delete" />
+
             <ImageButton
-                android:id="@+id/show_collection_cards"
+                android:id="@+id/add_collection"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:src="@drawable/ic_unpressed"
+                android:src="@drawable/ic_add_share"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
                 android:background="@color/white"
                 android:contentDescription="TODO" />
-
-            <ImageView
-                android:id="@+id/share_icon"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="10dp"
-                android:src="@drawable/ic_share" />
-
-            <ImageView
-                android:id="@+id/edit_icon"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="10dp"
-                android:src="@drawable/ic_edit" />
 
 
         </LinearLayout>
@@ -57,7 +50,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="20dp">
+            android:layout_marginBottom="20dp"
+            android:layout_marginHorizontal="6dp">
 
             <TextView
                 android:id="@+id/collection_name"
@@ -69,13 +63,6 @@
                 android:layout_weight="0.75"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
                 android:textSize="20sp" />
-
-            <CheckBox
-                android:id="@+id/checkbox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="invisible" />
-
 
         </LinearLayout>
 
