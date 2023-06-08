@@ -12,10 +12,11 @@ data class Collection(
     var name: String = "",
     var pressed: Boolean = false,
     var color: Int = -1, // цвет по умолчанию white
-    var cards: HashMap<String, Card> = hashMapOf()
+    var cards: HashMap<String, Card> = hashMapOf(),
+    var creator: String? = null
 ) : Serializable {
     // Конструктор без аргументов
-    constructor() : this(null, "",false, -1, hashMapOf())
+    constructor() : this(null, "",false, -1, hashMapOf(), null)
 }
 
 data class Card(
@@ -38,7 +39,7 @@ class FirebaseHelper {
     private val shareRef: DatabaseReference = database.getReference("shareCollections")
 
     fun shareCollection(collection: Collection, callback: (Boolean) -> Unit) {
-        shareRef.push().setValue(collection)
+        shareRef.child(collection.id.toString()).setValue(collection)
             .addOnSuccessListener { callback(true) }
             .addOnFailureListener { exception ->
                 Log.e("Firebase", "Error adding collection", exception)
@@ -69,13 +70,66 @@ class FirebaseHelper {
             .addOnFailureListener { callback(false) }
     }
 
+    fun getShareCollectionsIds(callback: (List<String>) -> Unit) {
+        shareRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val pressedCollectionsIds = mutableListOf<String>()
+
+                for (collectionSnapshot in dataSnapshot.children) {
+                    val collectionId = collectionSnapshot.key
+                    collectionId?.let { pressedCollectionsIds.add(it) }
+
+                }
+
+                callback(pressedCollectionsIds)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Обработка ошибки получения данных
+            }
+        })
+    }
+
+    fun getShareCards(collectionId: String, callback: (MutableList<Card>) -> Unit) {
+        getCardsRefBySharedCollectionId(collectionId).addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val cards = mutableListOf<Card>()
+                snapshot.children.forEach { child ->
+                    val card = child.getValue(Card::class.java)
+                    card?.id = child.key
+                    card?.let { cards.add(it) }
+                }
+                callback(cards)
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Log.w(TAG, "loadCards:onCancelled", error.toException())
+                Log.d("FirebaseHelper", "cards: users/$userId/cards")
+
+            }
+        })
+    }
+
+
     fun createCollection(collection: Collection, callback: (Boolean) -> Unit) {
-        collectionsRef.push().setValue(collection)
+        val newCollectionRef = collectionsRef.push() // Создаем ссылку на новый узел сгенерированным методом push()
+        val collectionId = newCollectionRef.key // Получаем сгенерированный идентификатор из ссылки
+        collection.id = collectionId // Устанавливаем идентификатор в поле id объекта collection
+
+        newCollectionRef.setValue(collection)
             .addOnSuccessListener { callback(true) }
             .addOnFailureListener { exception ->
                 Log.e("Firebase", "Error adding collection", exception)
                 callback(false) }
     }
+
+    fun addCollection(collection: Collection, callback: (Boolean) -> Unit) {
+        collectionsRef.child(collection.id.toString()).setValue(collection)
+            .addOnSuccessListener { callback(true) }
+            .addOnFailureListener { exception ->
+                Log.e("Firebase", "Error adding collection", exception)
+                callback(false) }
+    }
+
     fun getAllCollections(callback: (MutableList<Collection>) -> Unit) {
         collectionsRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -120,7 +174,25 @@ class FirebaseHelper {
             }
         })
     }
+    fun getCollectionsIds(callback: (List<String>) -> Unit) {
+        collectionsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val pressedCollectionsIds = mutableListOf<String>()
 
+                for (collectionSnapshot in dataSnapshot.children) {
+                    val collectionId = collectionSnapshot.key
+                    collectionId?.let { pressedCollectionsIds.add(it) }
+
+                }
+
+                callback(pressedCollectionsIds)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Обработка ошибки получения данных
+            }
+        })
+    }
     fun getAllCollectionCards(callback: (List<Card>) -> Unit) {
         collectionsRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -177,7 +249,11 @@ class FirebaseHelper {
 
 
     fun addCard(card: Card, collectionId: String, callback: (Boolean) -> Unit) {
-        getCardsRefByCollectionId(collectionId).push().setValue(card)
+        val newCardRef = getCardsRefByCollectionId(collectionId).push() // Создаем ссылку на новый узел сгенерированным методом push()
+        val cardId = newCardRef.key // Получаем сгенерированный идентификатор из ссылки
+        card.id = cardId // Устанавливаем идентификатор в поле id объекта collection
+
+        newCardRef.setValue(card)
             .addOnSuccessListener { callback(true) }
             .addOnFailureListener { exception ->
                 Log.e("Firebase", "Error adding card", exception)
@@ -228,5 +304,9 @@ class FirebaseHelper {
 
     fun getCardsRefByCollectionId(collectionId: String): DatabaseReference {
         return database.getReference("users/$userId/collections/$collectionId/cards")
+    }
+
+    fun getCardsRefBySharedCollectionId(collectionId: String): DatabaseReference {
+        return database.getReference("shareCollections/$collectionId/cards")
     }
 }

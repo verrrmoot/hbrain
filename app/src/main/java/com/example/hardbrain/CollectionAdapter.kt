@@ -84,11 +84,16 @@ class CollectionAdapter(var collections: MutableList<Collection>) : RecyclerView
 
         holder.shareIcon.setOnClickListener {
             val sharedCollection = Collection(collection.id, collection.name, isPressed, collection.color, collection.cards)
-            holder.firebaseHelper.shareCollection(sharedCollection) { success ->
-                if (success) {
-                    Log.d("share collection", "success share")
-                } else {
-                    Log.d("share collection", "error")
+            holder.firebaseHelper.getShareCollectionsIds { sharedCollectionsIds ->
+                if (!sharedCollectionsIds.contains(sharedCollection.id)) {
+                    holder.firebaseHelper.shareCollection(sharedCollection) { success ->
+                        if (success) {
+                            Log.d("share collection", "success share")
+                            Log.d("sharedCollection.id", sharedCollection.id.toString())
+                        } else {
+                            Log.d("share collection", "error")
+                        }
+                    }
                 }
             }
         }

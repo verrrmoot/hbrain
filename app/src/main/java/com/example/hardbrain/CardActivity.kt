@@ -20,6 +20,7 @@ class CardActivity : AppCompatActivity() {
     private lateinit var firebaseHelper: FirebaseHelper
     private lateinit var collectionId: String
     var bool: Boolean = false
+    var isShare: Boolean = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_card)
@@ -27,36 +28,45 @@ class CardActivity : AppCompatActivity() {
         setTheme(R.style.AppTheme)
 
         collectionId = intent.getStringExtra("collectionId")!!
+        isShare = intent.getBooleanExtra("isShare", false)
         recyclerView = findViewById(R.id.recycler_view)
         adapter = CardAdapter(mutableListOf(), collectionId)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
         firebaseHelper = FirebaseHelper()
 
-        Log.d("collectionID", collectionId)
-        // Загружаем все карточки из Firebase и отображаем их в RecyclerView
+        if (isShare){
+            firebaseHelper.getShareCards(collectionId) { cards ->
+                adapter.cards = cards as MutableList<Card>
+                adapter.notifyItemRangeChanged(0, adapter.itemCount)
+            }
+        }
+        else {
+            Log.d("collectionID", collectionId)
+            // Загружаем все карточки из Firebase и отображаем их в RecyclerView
             firebaseHelper.getAllCards(collectionId) { cards ->
                 adapter.cards = cards as MutableList<Card>
                 adapter.notifyItemRangeChanged(0, adapter.itemCount)
             }
 
-        // Обработчик нажатия на кнопку добавления карточки
-        val addCardButton = findViewById<FloatingActionButton>(R.id.addCardButton)
-        addCardButton.setOnClickListener {
-            val intent = Intent(this, EditCardActivity::class.java)
-            intent.putExtra("collectionId", collectionId)
-            startActivity(intent)
-            finish()
-        }
+            // Обработчик нажатия на кнопку добавления карточки
+            val addCardButton = findViewById<FloatingActionButton>(R.id.addCardButton)
+            addCardButton.setOnClickListener {
+                val intent = Intent(this, EditCardActivity::class.java)
+                intent.putExtra("collectionId", collectionId)
+                startActivity(intent)
+                finish()
+            }
 
-        // добавляем обработчик долгого нажатия на карточку
+            // добавляем обработчик долгого нажатия на карточку
             adapter.setOnLongClickListener { card, holder ->
-            // показываем чекбоксы
+                // показываем чекбоксы
                 adapter.showCheckBoxes(recyclerView)
                 bool = true
                 updateOptionsMenu()
-            // возвращаем true, чтобы показать контекстное меню (если оно есть)
-            true
+                // возвращаем true, чтобы показать контекстное меню (если оно есть)
+                true
+            }
         }
     }
 
@@ -77,9 +87,18 @@ class CardActivity : AppCompatActivity() {
     }
 
     public fun onBackClick(item: MenuItem){
-        val intent = Intent(this, CollectionActivity::class.java)
-        startActivity(intent)
-        finish()
+        if (isShare){
+            val intent = Intent(this, ShareCollectionActivity::class.java)
+            startActivity(intent)
+            finish()
+            true
+        }
+        else {
+            val intent = Intent(this, CollectionActivity::class.java)
+            startActivity(intent)
+            finish()
+            true
+        }
         updateOptionsMenu()
     }
 
@@ -121,10 +140,18 @@ class CardActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.back -> {
                 // Обработка нажатия кнопки "Назад"
-                val intent = Intent(this, CollectionActivity::class.java)
-                startActivity(intent)
-                finish()
-                true
+                if (isShare){
+                    val intent = Intent(this, ShareCollectionActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                    true
+                }
+                else {
+                    val intent = Intent(this, CollectionActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                    true
+                }
             }
             else -> super.onOptionsItemSelected(item)
         }

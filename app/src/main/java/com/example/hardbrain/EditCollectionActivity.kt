@@ -12,6 +12,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.google.firebase.auth.FirebaseAuth
 import java.util.UUID
 
 class EditCollectionActivity: AppCompatActivity() {
@@ -24,6 +25,8 @@ class EditCollectionActivity: AppCompatActivity() {
     private lateinit var btnColorRed: Button
     private lateinit var btnColorGreen: Button
     private lateinit var btnColorYellow: Button
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val userId: String? = auth.currentUser?.uid
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,8 +67,9 @@ class EditCollectionActivity: AppCompatActivity() {
                     return@setOnClickListener
                 }
 
-                // Создаем новую карточку
-                val newCollection = Collection(UUID.randomUUID().toString(), name, false, color, hashMapOf())
+                // Создаем новую коллекцию
+                val newCollection = Collection(UUID.randomUUID().toString(), name, false, color, hashMapOf(), userId)
+                Log.d("newCollection id", newCollection.id.toString())
                 firebaseHelper.createCollection(newCollection) { success ->
                     if (success) {
                         adapter.notifyItemInserted(adapter.collections.size - 1)
@@ -98,7 +102,7 @@ class EditCollectionActivity: AppCompatActivity() {
                             }
 
                             // Создаем новую карточку
-                            val editCollection = Collection(collectionId, name, collection.pressed, color, collection.cards)
+                            val editCollection = Collection(collectionId, name, collection.pressed, color, collection.cards, collection.creator)
                             firebaseHelper.updateCollection(editCollection) { success ->
                                 if (success) {
                                     adapter.notifyItemChanged(position)

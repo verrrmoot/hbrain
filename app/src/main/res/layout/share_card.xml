@@ -24,7 +24,7 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/delete_icon"
+                android:id="@+id/delete_share"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_marginTop="10dp"
@@ -39,7 +39,6 @@
                 android:src="@drawable/ic_add_share"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
-                android:background="@color/white"
                 android:contentDescription="TODO" />
 
 
