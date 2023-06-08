@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
 
@@ -66,7 +68,33 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+
+        val btnSignOut = findViewById<Button>(R.id.sign_out)
+        btnSignOut.setOnClickListener {
+            signOut()
+        }
     }
 
+    private fun signOut() {
+        // Получите экземпляр FirebaseAuth
+        val firebaseAuth = FirebaseAuth.getInstance()
+
+        // Выполните выход из учетной записи Google
+        firebaseAuth.signOut()
+
+        // Дополнительно, если вы хотите также отключиться от учетной записи Google,
+        // можно использовать GoogleSignInClient для выполнения выхода из аккаунта Google:
+
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        val googleSignInClient = GoogleSignIn.getClient(this, gso)
+        googleSignInClient.signOut()
+
+        // Перенаправьте пользователя на экран входа или другую соответствующую активность
+        // в вашем приложении, чтобы завершить процесс выхода.
+        startActivity(Intent(this, LoginActivity::class.java))
+    }
 
 }
