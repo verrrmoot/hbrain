@@ -39,6 +39,8 @@ class ShareAdapter(var collections: MutableList<Collection>) : RecyclerView.Adap
             }
         }
         holder.bind(collection)
+        Log.d("UserID", holder.userId.toString())
+        Log.d("Creator", collection.creator.toString())
 
         // Настройка обработчика нажатия на CollectionView
         holder.itemView.setOnClickListener {
@@ -66,7 +68,7 @@ class ShareAdapter(var collections: MutableList<Collection>) : RecyclerView.Adap
             }
         }
 
-        if (collection.creator == holder.userId){
+        if (collection.creator.toString() == holder.userId.toString()){
             holder.deleteIcon.visibility = View.VISIBLE
             holder.deleteIcon.setOnClickListener{
                 // удаляем выбранные карточки из списка
