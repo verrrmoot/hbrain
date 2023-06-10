@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity() {
         val buttonplay = findViewById<Button>(R.id.btn_go_play)
 
         buttonplay.setOnClickListener {
-            val intent = Intent(this, PlayCardActivity::class.java)
+            val intent = Intent(this, ShulteActivity::class.java)
             startActivity(intent)
             finish()
         }
