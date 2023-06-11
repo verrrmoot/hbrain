@@ -17,7 +17,7 @@ class ShulteActivity : AppCompatActivity() {
     private lateinit var startTime: Date
     private var currentNumber: Int = 1
     private var gameStarted: Boolean = false
-    private var gameMode: Int = 3 // 1 - Классическая таблица, 2 - Буквенная таблица, 3 - Двойная таблица
+    private var gameMode: Int = 3 // 1 - Классическая таблица, 2 - Буквенная таблица, 3 - Таблица с перемешиванием
     private var handler: Handler = Handler()
     private var updateTimeRunnable: Runnable? = null
 
@@ -90,9 +90,8 @@ class ShulteActivity : AppCompatActivity() {
         when (gameMode) {
             1 -> numbers.addAll(1..25)
             2 -> numbers.addAll('A'.code..'Y'.code)
-            3 -> {
-                numbers.addAll(1..25)
-                numbers.addAll(1..25)
+            3 -> { numbers.addAll(1..25)
+
             }
         }
 
@@ -108,6 +107,18 @@ class ShulteActivity : AppCompatActivity() {
         }
     }
 
+    private fun shuffleEnabledButtons() {
+        val enabledButtons = buttonGrid.flatten().filter { it.isEnabled }
+
+        val enabledButtonTexts = enabledButtons.map { it.text.toString() } as MutableList
+        enabledButtonTexts.shuffle()
+
+        for ((index, button) in enabledButtons.withIndex()) {
+            button.text = enabledButtonTexts[index]
+        }
+    }
+
+
     private fun onButtonClicked(row: Int, column: Int) {
         val button = buttonGrid[row][column]
         val buttonNumber = getButtonNumber(button.text.toString())
@@ -120,6 +131,7 @@ class ShulteActivity : AppCompatActivity() {
                 handler.removeCallbacksAndMessages(null)
                 showGameFinished()
             } else {
+                if (gameMode == 3) {shuffleEnabledButtons()}
                 setNumberText(currentNumber)
             }
         }
@@ -137,7 +149,7 @@ class ShulteActivity : AppCompatActivity() {
         val modeName = when (gameMode) {
             1 -> "Классическая таблица"
             2 -> "Буквенная таблица"
-            3 -> "Двойная таблица"
+            3 -> "Таблица с перемешиванием"
             else -> ""
         }
         modeText.text = "Режим: $modeName"
@@ -152,7 +164,7 @@ class ShulteActivity : AppCompatActivity() {
         val num = (number + 'A'.code - 1).toChar().toString()
         return when (gameMode) {
             1 -> numberText.text = "Текущее число: $number"
-            2 -> numberText.text = "Текущее число: $num"
+            2 -> numberText.text = "Текущий символ: $num"
             3 -> numberText.text = "Текущее число: $number"
             else -> numberText.text = ""
         }
