@@ -64,7 +64,25 @@ class MainActivity : AppCompatActivity() {
         val buttonplay = findViewById<Button>(R.id.btn_go_play)
 
         buttonplay.setOnClickListener {
+            val intent = Intent(this, PlayCardActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
+        // Добавляем обработчик для нажатия на кнопку
+        val buttonshulte = findViewById<Button>(R.id.btn_go_shulte)
+
+        buttonshulte.setOnClickListener {
             val intent = Intent(this, ShulteActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
+        // Добавляем обработчик для нажатия на кнопку
+        val buttonprofile = findViewById<Button>(R.id.profile)
+
+        buttonprofile.setOnClickListener {
+            val intent = Intent(this, ProfileActivity::class.java)
             startActivity(intent)
             finish()
         }

@@ -1,9 +1,12 @@
 package com.example.hardbrain
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.SystemClock
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
@@ -205,10 +208,50 @@ class ShulteActivity : AppCompatActivity() {
         }
     }
 
-
     override fun onDestroy() {
         super.onDestroy()
         handler.removeCallbacksAndMessages(null)
+    }
+
+    // указание элементов меню
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.my_menu, menu)
+        return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        val deleteItem = menu.findItem(R.id.delete)
+        deleteItem.isVisible = false
+        return super.onPrepareOptionsMenu(menu)
+    }
+
+    fun updateOptionsMenu() {
+        invalidateOptionsMenu()
+    }
+
+    public fun onBackClick(item: MenuItem){
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        finish()
+        updateOptionsMenu()
+    }
+
+    // добавляем обработчик клика на кнопку удаления выбранных карточек
+    public fun onDeleteSelectedCardsButtonClick(item: MenuItem) {
+
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.back -> {
+                // Обработка нажатия кнопки "Назад"
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+                finish()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }
 
