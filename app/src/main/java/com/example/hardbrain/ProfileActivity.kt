@@ -67,9 +67,7 @@ class ProfileActivity : AppCompatActivity() {
                 .circleCrop()
                 .into(imageViewAvatar)
         }
-
-
-
+        loadCounts {  }
         // Чтение данных профиля пользователя
         userRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -84,6 +82,7 @@ class ProfileActivity : AppCompatActivity() {
                     stats += "Дата создания: $creationDate\n"
                 }
 
+
                 loadStats { result ->
                     stats += result
                     Log.d("stat", stats)
@@ -93,9 +92,7 @@ class ProfileActivity : AppCompatActivity() {
                     textViewEmail.text = email
                     textViewStats.text = stats
                 }
-
             }
-
             override fun onCancelled(databaseError: DatabaseError) {
                 // Обработка ошибки при чтении данных профиля пользователя
                 Log.e("ProfileActivity", "Error loading user profile", databaseError.toException())
@@ -105,26 +102,49 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun loadStats(callback: (String) -> Unit) {
         var stat = ""
-        var newStats = UserStat("")
         firebaseHelper.getUserStat { userStat ->
             Log.d("userStat", userStat.toString())
+            if (userStat?.col_count != null || userStat?.card_count != null) {
+                stat += "---\n"
+            }
             if (userStat?.col_count != null) { stat += "Количество коллекций: ${userStat.col_count}\n" }
             if (userStat?.card_count != null) { stat += "Количество карточек: ${userStat.card_count}\n" }
-            if (userStat?.best_play1 != null || userStat?.best_play2 != null|| userStat?.best_play3 != null) {
-                stat += "---\nИгра <Найди пару>\n"
+            if (userStat?.best_play1 != null || userStat?.best_play2 != null || userStat?.best_play3 != null) {
+                stat += "---\nИгра <Найди пару> лучшее время\n"
             }
-            if (userStat?.best_play1 != null) { stat += "Лучшее время (easy): ${userStat.best_play1}\n" }
-            if (userStat?.best_play2 != null) { stat += "Лучшее время (medium): ${userStat.best_play2}\n" }
-            if (userStat?.best_play3 != null) { stat += "Лучшее время (hard): ${userStat.best_play3}\n" }
-            if (userStat?.best_shulte1 != null || userStat?.best_shulte2 != null|| userStat?.best_shulte3 != null){
-                stat += "---\nТаблица Шульте\n"
+            if (userStat?.best_play1 != null) { stat += "Easy: ${userStat.best_play1}\n" }
+            if (userStat?.best_play2 != null) { stat += "Medium: ${userStat.best_play2}\n" }
+            if (userStat?.best_play3 != null) { stat += "Hard: ${userStat.best_play3}\n" }
+            if (userStat?.best_shulte1 != null || userStat?.best_shulte2 != null || userStat?.best_shulte3 != null){
+                stat += "---\nТаблица Шульте лучшее время\n"
             }
-            if (userStat?.best_shulte1 != null) { stat += "Лучшее время (Классическая таблица): ${userStat.best_shulte1}\n" }
-            if (userStat?.best_shulte2 != null) { stat += "Лучшее время (Буквенная таблица): ${userStat.best_shulte2}\n" }
-            if (userStat?.best_shulte3 != null) { stat += "Лучшее время (Таблица с перемешиванием): ${userStat.best_shulte3}\n" }
+            if (userStat?.best_shulte1 != null) { stat += "Классическая таблица: ${userStat.best_shulte1}\n" }
+            if (userStat?.best_shulte2 != null) { stat += "Буквенная таблица: ${userStat.best_shulte2}\n" }
+            if (userStat?.best_shulte3 != null) { stat += "Таблица с перемешиванием: ${userStat.best_shulte3}\n" }
 
             Log.d("stat", stat)
             callback(stat) // Вызов колбэка с результатом
+        }
+    }
+
+    private fun loadCounts(callback: (UserStat) -> Unit) {
+        firebaseHelper.getUserStat { userStat ->
+            firebaseHelper.getCollectionsCount { colCount ->
+                userStat?.col_count = colCount.toString()
+                firebaseHelper.getCardsCount { cardsCount ->
+                    userStat?.card_count = cardsCount.toString()
+
+                    userStat?.let {
+                        firebaseHelper.addStat(it) { success ->
+                            if (success) {
+                                // Обработка успешного сохранения статистики
+                            } else {
+                                // Обработка ошибки при сохранении статистики
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 

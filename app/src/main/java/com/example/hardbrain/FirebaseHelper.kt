@@ -52,6 +52,42 @@ class FirebaseHelper {
     private val shareRef: DatabaseReference = database.getReference("shareCollections")
     val userStatRef = userStatsRef.child(userId.toString())
 
+    fun getCollectionsCount(callback: (Long) -> Unit) {
+        collectionsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val collectionsCount = snapshot.childrenCount
+                callback(collectionsCount)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("Firebase", "Error fetching user stat", error.toException())
+                callback(0) // Обработка ошибки, если не удалось получить данные
+            }
+        })
+    }
+
+    fun getCardsCount(callback: (Long) -> Unit){
+        collectionsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                var cardsCount = 0L
+
+                for (collectionSnapshot in snapshot.children) {
+                    val cardsSnapshot = collectionSnapshot.child("cards")
+                    cardsCount += cardsSnapshot.childrenCount
+                }
+
+                callback(cardsCount)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("Firebase", "Error fetching user stat", error.toException())
+                callback(0) // Обработка ошибки, если не удалось получить данные
+            }
+        })
+
+    }
+
+
     fun addStat(userStat: UserStat, callback: (Boolean) -> Unit){
         userStatsRef.setValue(userStat)
             .addOnSuccessListener { callback(true) }
