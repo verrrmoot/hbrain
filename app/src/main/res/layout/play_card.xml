@@ -39,6 +39,31 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:background="#FAE5D3">
+
+        <Button
+            android:id="@+id/bt_timer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Запустить таймер"
+            android:layout_marginHorizontal="5dp"/>
+
+        <TextView
+            android:id="@+id/timer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="Время: "
+            android:layout_margin="1dp"/>
+
+
+    </LinearLayout>
+
 <GridLayout
     android:id="@+id/gridLayoutEasy"
     android:layout_width="match_parent"

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.os.Handler
 import android.util.Log
 import android.view.Menu
@@ -12,6 +13,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.GridLayout
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.viewmodel.CreationExtras
@@ -69,6 +71,20 @@ class PlayCardActivity: AppCompatActivity(), View.OnClickListener {
     private lateinit var gridLayoutHard: GridLayout
     private lateinit var difficultyLevel: DifficultyLevel
     private lateinit var imageViews: List<ImageView>
+    private lateinit var timerTextView: TextView
+    private lateinit var firebaseHelper: FirebaseHelper
+    private val timerHandler = Handler()
+    private var elapsedTime: Long = 0
+    private val timerRunnable = object : Runnable {
+        override fun run() {
+            elapsedTime += 1000
+            val seconds = elapsedTime / 1000
+            timerTextView.text = "Время: $seconds сек"
+            timerHandler.postDelayed(this, 1000)
+        }
+    }
+
+
 
 
     @SuppressLint("MissingInflatedId")
@@ -79,6 +95,8 @@ class PlayCardActivity: AppCompatActivity(), View.OnClickListener {
         gridLayoutEasy = findViewById(R.id.gridLayoutEasy)
         gridLayoutMedium = findViewById(R.id.gridLayoutMedium)
         gridLayoutHard = findViewById(R.id.gridLayoutHard)
+        timerTextView = findViewById(R.id.timer)
+        firebaseHelper = FirebaseHelper()
 
         difficultyLevel = DifficultyLevel.EASY
         setGridLayout(difficultyLevel)
@@ -90,6 +108,7 @@ class PlayCardActivity: AppCompatActivity(), View.OnClickListener {
         val btEasy = findViewById<Button>(R.id.bt_easy)
         val btMedium = findViewById<Button>(R.id.bt_medium)
         val btHard = findViewById<Button>(R.id.bt_hard)
+        val btTimer = findViewById<Button>(R.id.bt_timer)
         imageViews = FindViews(this, difficultyLevel)
 
         imageViews.forEach{element ->
@@ -102,6 +121,8 @@ class PlayCardActivity: AppCompatActivity(), View.OnClickListener {
 
         // Установка уровня сложности
         btEasy.setOnClickListener{
+            restartTimer()
+            timerHandler.removeCallbacks(timerRunnable)
             difficultyLevel = DifficultyLevel.EASY
             setGridLayout(difficultyLevel)
             cardPairs = cardImagesEasy.size
@@ -122,6 +143,8 @@ class PlayCardActivity: AppCompatActivity(), View.OnClickListener {
             }
         }
         btMedium.setOnClickListener{
+            restartTimer()
+            timerHandler.removeCallbacks(timerRunnable)
             difficultyLevel = DifficultyLevel.MEDIUM
             setGridLayout(difficultyLevel)
             cardPairs = cardImagesMedium.size
@@ -142,6 +165,8 @@ class PlayCardActivity: AppCompatActivity(), View.OnClickListener {
             }
         }
         btHard.setOnClickListener{
+            restartTimer()
+            timerHandler.removeCallbacks(timerRunnable)
             difficultyLevel = DifficultyLevel.HARD
             setGridLayout(difficultyLevel)
             cardPairs = cardImagesHard.size
@@ -160,6 +185,10 @@ class PlayCardActivity: AppCompatActivity(), View.OnClickListener {
                 element.setImageResource(cards[index])
                 flipCardBack(element, getCardIndex(element, difficultyLevel))
             }
+        }
+
+        btTimer.setOnClickListener {
+            timerHandler.postDelayed(timerRunnable, 1000)
         }
 
         cardCount = when (difficultyLevel) {
@@ -217,6 +246,8 @@ class PlayCardActivity: AppCompatActivity(), View.OnClickListener {
             }
 
         }
+
+
 
     private fun FindViews (context: Context, difficultyLevel: DifficultyLevel): List<ImageView> {
         val cardList = mutableListOf<ImageView>()
@@ -479,10 +510,89 @@ class PlayCardActivity: AppCompatActivity(), View.OnClickListener {
         }
 
         private fun checkGameCompletion() {
-            if (flippedCardsCount == cardPairs) {
-                // Игра завершена, выполните необходимые действия
+            if (flippedCardsCount == cardPairs * 2) {
+                timerHandler.removeCallbacks(timerRunnable)
+                val result_old = timerTextView.text.toString()
+                val result = result_old.replace("Время: ", "")
+
+                Toast.makeText(this, "Ваш результат: $result", Toast.LENGTH_SHORT).show()
+
+                firebaseHelper.getUserStat { userStat ->
+                    if (userStat != null) {
+                        val updatedUserStat = when (difficultyLevel) {
+                            DifficultyLevel.EASY -> {
+                                if (userStat.best_play1 != null) {
+                                    if (userStat.best_play1!!.split(" ")[0].toInt() < result.split(" ")[0].toInt()) {
+                                        userStat.copy()
+                                    }
+                                    else{
+                                        userStat.copy(best_play1 = result)
+                                    }
+                                } else {
+                                    userStat.copy(best_play1 = result)
+                                }
+                            }
+                            DifficultyLevel.MEDIUM -> {
+                                if (userStat.best_play2 != null) {
+                                    if (userStat.best_play2!!.split(" ")[0].toInt() < result.split(" ")[0].toInt()) {
+                                        userStat.copy()
+                                    }
+                                    else{
+                                        userStat.copy(best_play2 = result)
+                                    }
+                                } else {
+                                    userStat.copy(best_play2 = result)
+                                }
+                            }
+                            DifficultyLevel.HARD -> {
+                                if (userStat.best_play3 != null) {
+                                    if (userStat.best_play3!!.split(" ")[0].toInt() < result.split(" ")[0].toInt()) {
+                                        userStat.copy()
+                                    }
+                                    else{
+                                        userStat.copy(best_play3 = result)
+                                    }
+                                } else {
+                                    userStat.copy(best_play3 = result)
+                                }
+                            }
+                            else -> userStat
+                        }
+
+                        firebaseHelper.addStat(updatedUserStat) { success ->
+                            if (success) {
+                                // Обработка успешного сохранения статистики
+                            } else {
+                                // Обработка ошибки при сохранении статистики
+                            }
+                        }
+                    }
+                    else{
+                        var newUserStat = UserStat("")
+                        newUserStat = when (difficultyLevel) {
+                            DifficultyLevel.EASY -> newUserStat.copy(best_play1 = result)
+                            DifficultyLevel.MEDIUM -> newUserStat.copy(best_play2 = result)
+                            DifficultyLevel.HARD -> newUserStat.copy(best_play3 = result)
+                            else -> newUserStat
+                        }
+                        firebaseHelper.addStat(newUserStat) { success ->
+                            if (success) {
+                                // Обработка успешного сохранения статистики
+                            } else {
+                                // Обработка ошибки при сохранении статистики
+                            }
+                        }
+                    }
+                }
             }
         }
+
+    private fun restartTimer() {
+        elapsedTime = 0
+        timerHandler.removeCallbacks(timerRunnable)
+        timerHandler.postDelayed(timerRunnable, 1000)
+    }
+
 
     // указание элементов меню
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
