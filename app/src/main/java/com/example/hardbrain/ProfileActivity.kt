@@ -16,6 +16,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import java.util.Date
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -25,6 +26,7 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var imageViewAvatar: ImageView
 
     private lateinit var firebaseDatabase: FirebaseDatabase
+    private lateinit var firebaseHelper: FirebaseHelper
     private lateinit var currentUser: FirebaseUser
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,6 +41,7 @@ class ProfileActivity : AppCompatActivity() {
 
         // Получение экземпляра Firebase Database
         firebaseDatabase = FirebaseDatabase.getInstance()
+        firebaseHelper = FirebaseHelper()
 
         // Получение текущего пользователя
         currentUser = FirebaseAuth.getInstance().currentUser!!
@@ -65,18 +68,32 @@ class ProfileActivity : AppCompatActivity() {
                 .into(imageViewAvatar)
         }
 
+
+
         // Чтение данных профиля пользователя
         userRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // Получение данных профиля пользователя
                 val username = account!!.displayName
                 val email = account!!.email
-                //val stats = dataSnapshot.child("stats").getValue(String::class.java)
+                var stats = ""
+                //Получение даты создания профиля
+                val creationTimestamp = currentUser?.metadata?.creationTimestamp
+                if (creationTimestamp != null) {
+                    val creationDate = Date(creationTimestamp)
+                    stats += "Дата создания: $creationDate\n"
+                }
 
-                // Обновление элементов интерфейса с полученными данными
-                textViewUsername.text = username
-                textViewEmail.text = email
-                //textViewStats.text = stats
+                loadStats { result ->
+                    stats += result
+                    Log.d("stat", stats)
+
+                    // Обновление элементов интерфейса с полученными данными
+                    textViewUsername.text = username
+                    textViewEmail.text = email
+                    textViewStats.text = stats
+                }
+
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -85,6 +102,32 @@ class ProfileActivity : AppCompatActivity() {
             }
         })
     }
+
+    private fun loadStats(callback: (String) -> Unit) {
+        var stat = ""
+        var newStats = UserStat("")
+        firebaseHelper.getUserStat { userStat ->
+            Log.d("userStat", userStat.toString())
+            if (userStat?.col_count != null) { stat += "Количество коллекций: ${userStat.col_count}\n" }
+            if (userStat?.card_count != null) { stat += "Количество карточек: ${userStat.card_count}\n" }
+            if (userStat?.best_play1 != null || userStat?.best_play2 != null|| userStat?.best_play3 != null) {
+                stat += "---\nИгра <Найди пару>\n"
+            }
+            if (userStat?.best_play1 != null) { stat += "Лучшее время (easy): ${userStat.best_play1}\n" }
+            if (userStat?.best_play2 != null) { stat += "Лучшее время (medium): ${userStat.best_play2}\n" }
+            if (userStat?.best_play3 != null) { stat += "Лучшее время (hard): ${userStat.best_play3}\n" }
+            if (userStat?.best_shulte1 != null || userStat?.best_shulte2 != null|| userStat?.best_shulte3 != null){
+                stat += "---\nТаблица Шульте\n"
+            }
+            if (userStat?.best_shulte1 != null) { stat += "Лучшее время (Классическая таблица): ${userStat.best_shulte1}\n" }
+            if (userStat?.best_shulte2 != null) { stat += "Лучшее время (Буквенная таблица): ${userStat.best_shulte2}\n" }
+            if (userStat?.best_shulte3 != null) { stat += "Лучшее время (Таблица с перемешиванием): ${userStat.best_shulte3}\n" }
+
+            Log.d("stat", stat)
+            callback(stat) // Вызов колбэка с результатом
+        }
+    }
+
 
     // указание элементов меню
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

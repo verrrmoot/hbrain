@@ -1,6 +1,6 @@
 package com.example.hardbrain
 
-import android.content.Intent
+import android.content .Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.SystemClock
@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import java.util.*
 
@@ -23,6 +24,7 @@ class ShulteActivity : AppCompatActivity() {
     private var gameMode: Int = 3 // 1 - Классическая таблица, 2 - Буквенная таблица, 3 - Таблица с перемешиванием
     private var handler: Handler = Handler()
     private var updateTimeRunnable: Runnable? = null
+    private lateinit var firebaseHelper: FirebaseHelper
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,6 +33,7 @@ class ShulteActivity : AppCompatActivity() {
 
         timerText = findViewById(R.id.timerText)
         numberText = findViewById(R.id.numberText)
+        firebaseHelper = FirebaseHelper()
 
         val startButton: Button = findViewById(R.id.startButton)
         startButton.setOnClickListener {
@@ -175,8 +178,80 @@ class ShulteActivity : AppCompatActivity() {
     }
 
     private fun showGameFinished() {
-        // Ваш код для отображения окончания игры
+        val result_old = timerText.text.toString()
+        val result = result_old.replace("Время: ", "")
+
+        Toast.makeText(this, "Ваш результат: $result", Toast.LENGTH_SHORT).show()
+
+        firebaseHelper.getUserStat { userStat ->
+            if (userStat != null) {
+                val updatedUserStat = when (gameMode) {
+                    1 -> {
+                        if (userStat.best_shulte1 != null) {
+                            if (userStat.best_shulte1!!.split(" ")[0].toInt() < result.split(" ")[0].toInt()) {
+                                userStat.copy()
+                            }
+                            else{
+                                userStat.copy(best_shulte1 = result)
+                            }
+                        } else {
+                            userStat.copy(best_shulte1 = result)
+                        }
+                    }
+                    2 -> {
+                        if (userStat.best_shulte2 != null) {
+                            if (userStat.best_shulte2!!.split(" ")[0].toInt() < result.split(" ")[0].toInt()) {
+                                userStat.copy()
+                            }
+                            else{
+                                userStat.copy(best_shulte2 = result)
+                            }
+                        } else {
+                            userStat.copy(best_shulte2 = result)
+                        }
+                    }
+                    3 -> {
+                        if (userStat.best_shulte3 != null) {
+                            if (userStat.best_shulte3!!.split(" ")[0].toInt() < result.split(" ")[0].toInt()) {
+                                userStat.copy()
+                            }
+                            else{
+                                userStat.copy(best_shulte3 = result)
+                            }
+                        } else {
+                            userStat.copy(best_shulte3 = result)
+                        }
+                    }
+                    else -> userStat
+                }
+
+                firebaseHelper.addStat(updatedUserStat) { success ->
+                    if (success) {
+                        // Обработка успешного сохранения статистики
+                    } else {
+                        // Обработка ошибки при сохранении статистики
+                    }
+                }
+            }
+            else{
+                var newUserStat = UserStat("")
+                newUserStat = when (gameMode) {
+                    1 -> newUserStat.copy(best_shulte1 = result)
+                    2 -> newUserStat.copy(best_shulte2 = result)
+                    3 -> newUserStat.copy(best_shulte3 = result)
+                    else -> newUserStat
+                }
+                firebaseHelper.addStat(newUserStat) { success ->
+                    if (success) {
+                        // Обработка успешного сохранения статистики
+                    } else {
+                        // Обработка ошибки при сохранении статистики
+                    }
+                }
+            }
+        }
     }
+
 
     private fun getButtonText(number: Int): String {
         return when (gameMode) {

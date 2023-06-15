@@ -19,6 +19,18 @@ data class Collection(
     constructor() : this(null, "",false, -1, hashMapOf(), null)
 }
 
+data class UserStat(
+    var created: String = "",
+    var col_count: String? = null,
+    var card_count: String? = null,
+    var best_play1: String? = null,
+    var best_play2: String? = null,
+    var best_play3: String? = null,
+    var best_shulte1: String? = null,
+    var best_shulte2: String? = null,
+    var best_shulte3: String? = null
+): Serializable
+
 data class Card(
     var id: String? = null,
     var front: String = "",
@@ -36,7 +48,32 @@ class FirebaseHelper {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val userId: String? = auth.currentUser?.uid
     private val collectionsRef: DatabaseReference = database.getReference("users/$userId/collections")
+    private val userStatsRef: DatabaseReference = database.getReference("users/$userId/stats")
     private val shareRef: DatabaseReference = database.getReference("shareCollections")
+    val userStatRef = userStatsRef.child(userId.toString())
+
+    fun addStat(userStat: UserStat, callback: (Boolean) -> Unit){
+        userStatsRef.setValue(userStat)
+            .addOnSuccessListener { callback(true) }
+            .addOnFailureListener { exception ->
+                Log.e("Firebase", "Error adding collection", exception)
+                callback(false) }
+    }
+
+    fun getUserStat(callback: (UserStat?) -> Unit) {
+        userStatsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val userStat = snapshot.getValue(UserStat::class.java)
+                callback(userStat)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("Firebase", "Error fetching user stat", error.toException())
+                callback(null)
+            }
+        })
+    }
+
 
     fun shareCollection(collection: Collection, callback: (Boolean) -> Unit) {
         shareRef.child(collection.id.toString()).setValue(collection)
