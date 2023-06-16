@@ -1,11 +1,17 @@
 package com.example.hardbrain
 
 import android.content.ContentValues.TAG
+import android.net.Uri
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
-import com.google.firebase.database.ktx.getValue
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.storage.FirebaseStorage
 import java.io.Serializable
+
 
 data class Collection(
     var id: String? = null,
@@ -39,7 +45,8 @@ data class Card(
     var collectionId: String? = "",
     var interval: Int = 1, //по умолчанию 0 дней
     var factor: Double = 1.0, //изначально 1
-    var color: Int = -1 // цвет по умолчанию white
+    var color: Int = -1, // цвет по умолчанию white
+    var imageUrl: String? = null
 ): Serializable
 
 class FirebaseHelper {
@@ -47,10 +54,36 @@ class FirebaseHelper {
     private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val userId: String? = auth.currentUser?.uid
-    private val collectionsRef: DatabaseReference = database.getReference("users/$userId/collections")
+    private val collectionsRef: DatabaseReference =
+        database.getReference("users/$userId/collections")
     private val userStatsRef: DatabaseReference = database.getReference("users/$userId/stats")
     private val shareRef: DatabaseReference = database.getReference("shareCollections")
     val userStatRef = userStatsRef.child(userId.toString())
+    private val storage: FirebaseStorage = FirebaseStorage.getInstance()
+
+
+    fun uploadImageToFirestore(imageUri: Uri, collectionId: String, cardId: String, callback: (imageUrl: String?) -> Unit) {
+        val storageRef = storage.reference
+        val imageRef = storageRef.child("images/$collectionId/$cardId.jpg")
+
+        val uploadTask = imageRef.putFile(imageUri)
+        uploadTask.continueWithTask { task ->
+            if (!task.isSuccessful) {
+                task.exception?.let {
+                    throw it
+                }
+            }
+            imageRef.downloadUrl
+        }.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val imageUrl = task.result.toString()
+                callback(imageUrl)
+            } else {
+                callback(null)
+            }
+        }
+    }
+
 
     fun getCollectionsCount(callback: (Long) -> Unit) {
         collectionsRef.addListenerForSingleValueEvent(object : ValueEventListener {

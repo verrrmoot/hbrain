@@ -100,7 +100,6 @@ class PlayCardActivity: AppCompatActivity(), View.OnClickListener {
 
         difficultyLevel = DifficultyLevel.EASY
         setGridLayout(difficultyLevel)
-        // Перемешать картинки
         cards.addAll(cardImagesEasy)
         cards.addAll(cardImagesEasy)
         cards.shuffle()
@@ -113,7 +112,7 @@ class PlayCardActivity: AppCompatActivity(), View.OnClickListener {
 
         imageViews.forEach{element ->
             element.setOnClickListener(this)
-            // Установить изображения для каждой карточки
+            // Изображения для каждой карточки
             val index = getCardIndex(element, difficultyLevel)
             element.setImageResource(cards[index])
             flipCardBack(element, getCardIndex(element, difficultyLevel))
@@ -136,7 +135,6 @@ class PlayCardActivity: AppCompatActivity(), View.OnClickListener {
 
             imageViews.forEach{element ->
                 element.setOnClickListener(this)
-                // Установить изображения для каждой карточки
                 val index = getCardIndex(element, difficultyLevel)
                 element.setImageResource(cards[index])
                 flipCardBack(element, getCardIndex(element, difficultyLevel))
@@ -149,7 +147,6 @@ class PlayCardActivity: AppCompatActivity(), View.OnClickListener {
             setGridLayout(difficultyLevel)
             cardPairs = cardImagesMedium.size
             cards.clear()
-            // Перемешать картинки
             cards.addAll(cardImagesMedium)
             cards.addAll(cardImagesMedium)
             cards.shuffle()
@@ -158,7 +155,6 @@ class PlayCardActivity: AppCompatActivity(), View.OnClickListener {
 
             imageViews.forEach{element ->
                 element.setOnClickListener(this)
-                // Установить изображения для каждой карточки
                 val index = getCardIndex(element, difficultyLevel)
                 element.setImageResource(cards[index])
                 flipCardBack(element, getCardIndex(element, difficultyLevel))
@@ -171,7 +167,6 @@ class PlayCardActivity: AppCompatActivity(), View.OnClickListener {
             setGridLayout(difficultyLevel)
             cardPairs = cardImagesHard.size
             cards.clear()
-            // Перемешать картинки
             cards.addAll(cardImagesHard)
             cards.addAll(cardImagesHard)
             cards.shuffle()
@@ -180,7 +175,6 @@ class PlayCardActivity: AppCompatActivity(), View.OnClickListener {
 
             imageViews.forEach{element ->
                 element.setOnClickListener(this)
-                // Установить изображения для каждой карточки
                 val index = getCardIndex(element, difficultyLevel)
                 element.setImageResource(cards[index])
                 flipCardBack(element, getCardIndex(element, difficultyLevel))
@@ -219,16 +213,9 @@ class PlayCardActivity: AppCompatActivity(), View.OnClickListener {
                 val secondCard = findViewById<ImageView>(getCardViewId(secondCardIndex, difficultyLevel))
 
                 if (cards[firstCardIndex] == cards[secondCardIndex]) {
-                    // Совпадение! Обработка логики совпадения карточек
-
                     flippedCardsCount += 2
                     checkGameCompletion()
                 } else {
-                    // Несовпадение! Обработка логики несовпадения карточек
-
-                    // Добавьте здесь задержку (Handler, Coroutine, Timer и т. д.) перед закрытием карточек
-                    // Для примера, здесь используется задержка в 1 секунду с помощью Handler
-
                     val handler = Handler()
                     handler.postDelayed({
                         flipCardBack(firstCard, firstCardIndex)
@@ -239,10 +226,6 @@ class PlayCardActivity: AppCompatActivity(), View.OnClickListener {
                 firstCardIndex = -1
                 secondCardIndex = -1
 
-                // Добавьте проверку на победу, если достигнуто нужное количество карточек
-                if (flippedCardsCount == cardCount) {
-
-                }
             }
 
         }
@@ -253,7 +236,7 @@ class PlayCardActivity: AppCompatActivity(), View.OnClickListener {
         val cardList = mutableListOf<ImageView>()
         when (difficultyLevel) {
             DifficultyLevel.EASY -> {
-                // Установить обработчик щелчков для всех карточек
+                // Обработчик щелчков для всех карточек
                 cardList.add(findViewById<ImageView>(R.id.e_card1))
                 cardList.add(findViewById<ImageView>(R.id.e_card2))
                 cardList.add(findViewById<ImageView>(R.id.e_card3))
@@ -269,7 +252,6 @@ class PlayCardActivity: AppCompatActivity(), View.OnClickListener {
                 return (cardList)
             }
             DifficultyLevel.MEDIUM -> {
-                // Установить обработчик щелчков для всех карточек
                 cardList.add(findViewById<ImageView>(R.id.m_card1))
                 cardList.add(findViewById<ImageView>(R.id.m_card2))
                 cardList.add(findViewById<ImageView>(R.id.m_card3))
@@ -291,7 +273,6 @@ class PlayCardActivity: AppCompatActivity(), View.OnClickListener {
                 return (cardList)
             }
             DifficultyLevel.HARD -> {
-                // Установить обработчик щелчков для всех карточек
                 cardList.add(findViewById<ImageView>(R.id.h_card1))
                 cardList.add(findViewById<ImageView>(R.id.h_card2))
                 cardList.add(findViewById<ImageView>(R.id.h_card3))

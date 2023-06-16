@@ -1,8 +1,10 @@
 package com.example.hardbrain
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -34,6 +36,16 @@ class EditCardActivity : AppCompatActivity() {
     private lateinit var btnColorRed: Button
     private lateinit var btnColorGreen: Button
     private lateinit var btnColorYellow: Button
+    private lateinit var collectionId: String
+    private lateinit var cardId: String
+    private lateinit var imageUri: Uri
+    private var imageUrl: String? = null
+
+
+    companion object {
+        private const val REQUEST_IMAGE_PICK = 4
+    }
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("SuspiciousIndentation")
@@ -42,9 +54,9 @@ class EditCardActivity : AppCompatActivity() {
         setContentView(R.layout.activity_edit_card)
 
         val isNewCard = intent.getBooleanExtra("isNewCard", true)
-        val cardId = intent.getStringExtra("card_id")
+        cardId = intent.getStringExtra("card_id").toString()
         val position = intent.getIntExtra("position", -1)
-        val collectionId = intent.getStringExtra("collectionId")!!
+        collectionId = intent.getStringExtra("collectionId")!!
 
         mContext = this // инициализация контекста
         adapter = CardAdapter(mutableListOf(), collectionId)
@@ -85,6 +97,9 @@ class EditCardActivity : AppCompatActivity() {
 
                 // Создаем новую карточку
                 val newCard = Card(UUID.randomUUID().toString(), front, back, dateString, collectionId, 1, 1.0, color)
+                if (imageUrl != null){
+                    newCard.imageUrl = imageUrl
+                }
                 firebaseHelper.addCard(newCard, collectionId) { success ->
                     if (success) {
                         adapter.cards.add(newCard)
@@ -123,6 +138,9 @@ class EditCardActivity : AppCompatActivity() {
                                 return@setOnClickListener
                             }
                             val editedCard = Card(cardId, front, back, card.date, card.collectionId, card.interval, card.factor, color)
+                            if (imageUrl != null){
+                                editedCard.imageUrl = imageUrl
+                            }
                             Log.d("Id editedCard", editedCard.id.toString())
                             Log.d("collectionId", collectionId)
 
@@ -151,6 +169,21 @@ class EditCardActivity : AppCompatActivity() {
 
         }
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK && imageUri != null) {
+            firebaseHelper.uploadImageToFirestore(imageUri, collectionId, cardId) { imageUrl ->
+                if (imageUrl != null) {
+                    this.imageUrl = imageUrl
+                } else {
+                    //
+                }
+            }
+        }
+
+    }
+
 
     fun getColorByButton(view: View, context: Context): Int {
         return when (view.id) {

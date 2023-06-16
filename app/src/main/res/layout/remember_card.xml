@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="#FAE5D3"
+    android:background="@color/menu_color"
     tools:context=".CardActivity">
 
     <androidx.cardview.widget.CardView
@@ -80,7 +80,7 @@
             android:layout_weight="0.2"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="5dp"
-            android:backgroundTint="#FFA07A"
+            android:backgroundTint="@color/purple_500"
             android:text="1" />
 
         <Button
@@ -89,7 +89,7 @@
             android:layout_weight="0.2"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="5dp"
-            android:backgroundTint="#FFA07A"
+            android:backgroundTint="@color/purple_500"
             android:text="2" />
 
         <Button
@@ -98,7 +98,7 @@
             android:layout_weight="0.2"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="5dp"
-            android:backgroundTint="#FFA07A"
+            android:backgroundTint="@color/purple_500"
             android:text="3" />
 
         <Button
@@ -107,7 +107,7 @@
             android:layout_weight="0.2"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="5dp"
-            android:backgroundTint="#FFA07A"
+            android:backgroundTint="@color/purple_500"
             android:text="4" />
 
         <Button
@@ -116,7 +116,7 @@
             android:layout_weight="0.2"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="5dp"
-            android:backgroundTint="#FFA07A"
+            android:backgroundTint="@color/purple_500"
             android:text="5" />
 
     </LinearLayout>

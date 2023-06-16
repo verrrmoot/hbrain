@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAE5D3">
+    android:background="@color/menu_color">
 
     <EditText
         android:id="@+id/collect_name"
@@ -14,7 +14,7 @@
         android:hint="Collection name"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="16dp"
-        android:textColor="#FF7F50"
+        android:textColor="@color/purple_500"
         android:padding="10dp"
         android:background="@drawable/edittext_border"/>
 
@@ -84,7 +84,7 @@
         android:layout_width="wrap_content"
         android:layout_height="79dp"
         android:layout_marginBottom="236dp"
-        android:backgroundTint="#FFA07A"
+        android:backgroundTint="@color/purple_500"
         android:text="Сохранить"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAE5D3"
+    android:background='@color/menu_color'
     tools:context=".MainActivity"
     android:orientation="vertical">
 
@@ -20,7 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:backgroundTint="#FFA07A"
+            android:backgroundTint="@color/purple_500"
             android:padding="6dp"
             android:layout_marginHorizontal="8dp"
             android:text="Профиль"
@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:backgroundTint="#FFA07A"
+            android:backgroundTint="@color/purple_500"
             android:padding="6dp"
             android:layout_marginHorizontal="8dp"
             android:text="Выйти"
@@ -45,7 +45,7 @@
         android:layout_height="0dp"
         android:layout_weight="0.175"
         android:layout_margin="10dp"
-        android:backgroundTint="#FFA07A"
+        android:backgroundTint="@color/purple_500"
         android:text="К общим карточкам"
         tools:ignore="MissingConstraints" />
 
@@ -55,7 +55,7 @@
         android:layout_height="0dp"
         android:layout_weight="0.175"
         android:layout_margin="10dp"
-        android:backgroundTint="#FFA07A"
+        android:backgroundTint="@color/purple_500"
         android:text="Ежедневные карточки"
         tools:ignore="MissingConstraints" />
 
@@ -65,7 +65,7 @@
         android:layout_height="0dp"
         android:layout_weight="0.175"
         android:layout_margin="10dp"
-        android:backgroundTint="#FFA07A"
+        android:backgroundTint="@color/purple_500"
         android:text="Коллекции"
         tools:ignore="MissingConstraints" />
 
@@ -75,7 +75,7 @@
         android:layout_height="0dp"
         android:layout_weight="0.175"
         android:layout_margin="10dp"
-        android:backgroundTint="#FFA07A"
+        android:backgroundTint="@color/purple_500"
         android:text="Игра"
         tools:ignore="MissingConstraints" />
 
@@ -85,7 +85,7 @@
         android:layout_height="0dp"
         android:layout_weight="0.175"
         android:layout_margin="10dp"
-        android:backgroundTint="#FFA07A"
+        android:backgroundTint="@color/purple_500"
         android:text="Таблица Шульте"
         android:layout_marginBottom="50dp"
         tools:ignore="MissingConstraints" />
