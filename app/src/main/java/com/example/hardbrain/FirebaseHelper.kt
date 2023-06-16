@@ -46,7 +46,8 @@ data class Card(
     var interval: Int = 1, //по умолчанию 0 дней
     var factor: Double = 1.0, //изначально 1
     var color: Int = -1, // цвет по умолчанию white
-    var imageUrl: String? = null
+    var imageUrl_f: String? = null,
+    var imageUrl_b: String? = null
 ): Serializable
 
 class FirebaseHelper {

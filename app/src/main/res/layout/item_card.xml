@@ -38,6 +38,15 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
                     android:textSize="20sp" />
 
+                <ImageView
+                    android:id="@+id/image_view_f"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:maxHeight="150dp"
+                    android:maxWidth="150dp"
+                    android:visibility="gone"
+                        />
                 <View
                     android:id="@+id/divider"
                     android:layout_width="match_parent"
@@ -52,6 +61,16 @@
                     android:minLines="1"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
                     android:textSize="20sp" />
+
+                <ImageView
+                    android:id="@+id/image_view_b"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:maxHeight="150dp"
+                    android:maxWidth="150dp"
+                    android:visibility="gone"
+                    />
 
         </LinearLayout>
 

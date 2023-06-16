@@ -20,6 +20,7 @@ import android.widget.ViewFlipper
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.squareup.picasso.Picasso
 import kotlin.properties.Delegates
 
 
@@ -43,9 +44,18 @@ class CardAdapter(var cards: MutableList<Card>, private val collectionId: String
         val card = cards[position]
         holder.tvFront.text = card.front
         holder.tvBack.text = card.back
+        // Загрузка и отображение изображения, если ссылка не null
+        if (!card.imageUrl_f.isNullOrEmpty()) {
+            Picasso.get().load(card.imageUrl_f).into(holder.imageViewF)
+            holder.imageViewF.visibility = View.VISIBLE
+        } else {
+            holder.imageViewF.visibility = View.GONE
+        }
+
         // Изначально обратная сторона скрыта
         holder.tvBack.visibility = View.GONE
         holder.divider.visibility = View.GONE
+        holder.imageViewB.visibility = View.GONE
 
         // Обработчик нажатия на карточку
         holder.cardView.setOnClickListener {
@@ -78,6 +88,15 @@ class CardAdapter(var cards: MutableList<Card>, private val collectionId: String
             } else {
                 View.GONE // Закрытое состояние: скрываем обратную сторону
             }
+            // Загрузка и отображение изображения, если ссылка не null
+            if (!card.imageUrl_b.isNullOrEmpty() && !isOpen) {
+                Picasso.get().load(card.imageUrl_b).into(holder.imageViewB)
+                holder.imageViewB.visibility = View.VISIBLE
+            } else {
+                // Скрытие ImageView, если ссылка равна null
+                holder.imageViewB.visibility = View.GONE
+            }
+
         }
 
         holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
@@ -113,6 +132,9 @@ class CardAdapter(var cards: MutableList<Card>, private val collectionId: String
         val editIcon: ImageView = itemView.findViewById(R.id.edit_icon)
         var isCardOpen: Boolean = false
         val divider: View = itemView.findViewById(R.id.divider)
+        val imageViewF: ImageView = itemView.findViewById(R.id.image_view_f)
+        val imageViewB: ImageView = itemView.findViewById(R.id.image_view_b)
+
 
         init {
             itemView.setOnLongClickListener {

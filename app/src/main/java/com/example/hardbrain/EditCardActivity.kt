@@ -7,12 +7,14 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -38,8 +40,9 @@ class EditCardActivity : AppCompatActivity() {
     private lateinit var btnColorYellow: Button
     private lateinit var collectionId: String
     private lateinit var cardId: String
-    private lateinit var imageUri: Uri
+    private var imageUri: Uri? = null
     private var imageUrl: String? = null
+    private var isImageF = true
 
 
     companion object {
@@ -75,6 +78,8 @@ class EditCardActivity : AppCompatActivity() {
         val etFront = findViewById<TextView>(R.id.edit_text_front)
         val etBack = findViewById<TextView>(R.id.edit_text_back)
         val btnSave = findViewById<TextView>(R.id.button_save_card)
+        val btnAddImage1 = findViewById<ImageButton>(R.id.add_image_1)
+        val btnAddImage2 = findViewById<ImageButton>(R.id.add_image_2)
 
         btnColorWhite.setOnClickListener { color = getColorByButton(it, this) }
         btnColorBlue.setOnClickListener { color = getColorByButton(it, this) }
@@ -82,7 +87,19 @@ class EditCardActivity : AppCompatActivity() {
         btnColorGreen.setOnClickListener { color = getColorByButton(it, this) }
         btnColorYellow.setOnClickListener { color = getColorByButton(it, this) }
 
-            if (isNewCard) {
+
+        btnAddImage1.setOnClickListener {
+            isImageF = true
+            openGallery()
+        }
+
+        btnAddImage2.setOnClickListener {
+            isImageF = false
+            openGallery()
+        }
+
+
+        if (isNewCard) {
             // Обработчик нажатия на кнопку сохранения карточки
             btnSave.setOnClickListener {
                 // Считываем данные из полей формы
@@ -97,8 +114,15 @@ class EditCardActivity : AppCompatActivity() {
 
                 // Создаем новую карточку
                 val newCard = Card(UUID.randomUUID().toString(), front, back, dateString, collectionId, 1, 1.0, color)
-                if (imageUrl != null){
-                    newCard.imageUrl = imageUrl
+                if (isImageF){
+                    if (imageUrl != null){
+                        newCard.imageUrl_f = imageUrl
+                    }
+                }
+                else{
+                    if (imageUrl != null){
+                        newCard.imageUrl_b = imageUrl
+                    }
                 }
                 firebaseHelper.addCard(newCard, collectionId) { success ->
                     if (success) {
@@ -137,9 +161,16 @@ class EditCardActivity : AppCompatActivity() {
                                 Toast.makeText(this, "Заполните все поля", Toast.LENGTH_SHORT).show()
                                 return@setOnClickListener
                             }
-                            val editedCard = Card(cardId, front, back, card.date, card.collectionId, card.interval, card.factor, color)
-                            if (imageUrl != null){
-                                editedCard.imageUrl = imageUrl
+                            val editedCard = Card(cardId, front, back, card.date, card.collectionId, card.interval, card.factor, color, card.imageUrl_f, card.imageUrl_b)
+                            if (isImageF){
+                                if (imageUrl != null){
+                                    editedCard.imageUrl_f = imageUrl
+                                }
+                            }
+                            else{
+                                if (imageUrl != null){
+                                    editedCard.imageUrl_b = imageUrl
+                                }
                             }
                             Log.d("Id editedCard", editedCard.id.toString())
                             Log.d("collectionId", collectionId)
@@ -172,17 +203,26 @@ class EditCardActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && imageUri != null) {
-            firebaseHelper.uploadImageToFirestore(imageUri, collectionId, cardId) { imageUrl ->
-                if (imageUrl != null) {
-                    this.imageUrl = imageUrl
-                } else {
-                    //
+        if (requestCode == REQUEST_IMAGE_PICK && resultCode == Activity.RESULT_OK && data != null) {
+            imageUri = data.data
+            imageUri?.let {
+                firebaseHelper.uploadImageToFirestore(it, collectionId, cardId) { imageUrl ->
+                    if (imageUrl != null) {
+                        this.imageUrl = imageUrl
+                    } else {
+                        //
+                    }
                 }
             }
         }
 
     }
+
+    private fun openGallery() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(intent, REQUEST_IMAGE_PICK)
+    }
+
 
 
     fun getColorByButton(view: View, context: Context): Int {
