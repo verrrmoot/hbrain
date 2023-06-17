@@ -49,6 +49,13 @@
         android:text="К общим карточкам"
         tools:ignore="MissingConstraints" />
 
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_marginHorizontal="50dp"
+        android:background="@drawable/divider_orange" />
+
     <Button
         android:id="@+id/btn_go_cards"
         android:layout_width="match_parent"
@@ -58,6 +65,12 @@
         android:backgroundTint="@color/purple_500"
         android:text="Ежедневные карточки"
         tools:ignore="MissingConstraints" />
+    <View
+        android:id="@+id/divider1"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_marginHorizontal="50dp"
+        android:background="@drawable/divider_orange" />
 
     <Button
         android:id="@+id/btn_go_collections"
@@ -68,6 +81,12 @@
         android:backgroundTint="@color/purple_500"
         android:text="Коллекции"
         tools:ignore="MissingConstraints" />
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_marginHorizontal="50dp"
+        android:background="@drawable/divider_orange" />
 
     <Button
         android:id="@+id/btn_go_play"
@@ -78,6 +97,12 @@
         android:backgroundTint="@color/purple_500"
         android:text="Игра"
         tools:ignore="MissingConstraints" />
+    <View
+        android:id="@+id/divider3"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_marginHorizontal="50dp"
+        android:background="@drawable/divider_orange" />
 
     <Button
         android:id="@+id/btn_go_shulte"

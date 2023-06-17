@@ -1,7 +1,13 @@
 package com.example.hardbrain
 
 import android.content.Intent
+import android.graphics.Color
+import android.icu.text.SimpleDateFormat
 import android.os.Bundle
+import android.system.Os.stat
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -16,7 +22,10 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import java.time.format.DateTimeFormatter
 import java.util.Date
+import java.util.Locale
+
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -79,7 +88,9 @@ class ProfileActivity : AppCompatActivity() {
                 val creationTimestamp = currentUser?.metadata?.creationTimestamp
                 if (creationTimestamp != null) {
                     val creationDate = Date(creationTimestamp)
-                    stats += "Дата создания: $creationDate\n"
+                    val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+                    val formattedCreationDate = dateFormat.format(creationDate)
+                    stats += "Дата создания: $formattedCreationDate\n"
                 }
 
 
@@ -87,10 +98,34 @@ class ProfileActivity : AppCompatActivity() {
                     stats += result
                     Log.d("stat", stats)
 
+                    val spannableString = SpannableString(stats)
+
+                    var startPosition: Int = stats.indexOf("-----")
+                    var endPosition: Int
+
+                    while (startPosition >= 0) {
+                        endPosition = startPosition + 5 // Длина строки "---"
+
+                        // Создание ForegroundColorSpan (оранжевый цвет)
+                        val orangeColorSpan = ForegroundColorSpan(Color.parseColor("#f58535"))
+
+                        // Применение ForegroundColorSpan к строке "---"
+                        spannableString.setSpan(
+                            orangeColorSpan,
+                            startPosition,
+                            endPosition,
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
+
+                        // Поиск следующей строки "---"
+                        startPosition = stats.indexOf("-----", endPosition)
+                    }
+
+
                     // Обновление элементов интерфейса с полученными данными
                     textViewUsername.text = username
                     textViewEmail.text = email
-                    textViewStats.text = stats
+                    textViewStats.text = spannableString
                 }
             }
             override fun onCancelled(databaseError: DatabaseError) {
@@ -105,18 +140,18 @@ class ProfileActivity : AppCompatActivity() {
         firebaseHelper.getUserStat { userStat ->
             Log.d("userStat", userStat.toString())
             if (userStat?.col_count != null || userStat?.card_count != null) {
-                stat += "---\n"
+                stat += "-----\n"
             }
             if (userStat?.col_count != null) { stat += "Количество коллекций: ${userStat.col_count}\n" }
             if (userStat?.card_count != null) { stat += "Количество карточек: ${userStat.card_count}\n" }
             if (userStat?.best_play1 != null || userStat?.best_play2 != null || userStat?.best_play3 != null) {
-                stat += "---\nИгра <Найди пару> лучшее время\n"
+                stat += "-----\nИгра <Найди пару> лучшее время\n"
             }
             if (userStat?.best_play1 != null) { stat += "Easy: ${userStat.best_play1}\n" }
             if (userStat?.best_play2 != null) { stat += "Medium: ${userStat.best_play2}\n" }
             if (userStat?.best_play3 != null) { stat += "Hard: ${userStat.best_play3}\n" }
             if (userStat?.best_shulte1 != null || userStat?.best_shulte2 != null || userStat?.best_shulte3 != null){
-                stat += "---\nТаблица Шульте лучшее время\n"
+                stat += "-----\nТаблица Шульте лучшее время\n"
             }
             if (userStat?.best_shulte1 != null) { stat += "Классическая таблица: ${userStat.best_shulte1}\n" }
             if (userStat?.best_shulte2 != null) { stat += "Буквенная таблица: ${userStat.best_shulte2}\n" }

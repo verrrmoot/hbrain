@@ -309,16 +309,7 @@ class FirebaseHelper {
                     val cardsSnapshot = collectionSnapshot.child("cards")
 
                     for (cardSnapshot in cardsSnapshot.children) {
-                        val cardKey = cardSnapshot.key
-                        val front = cardSnapshot.child("front").getValue(String::class.java)
-                        val back = cardSnapshot.child("back").getValue(String::class.java)
-                        val date = cardSnapshot.child("date").getValue(String::class.java)
-                        val collectionId = cardSnapshot.child("collectionId").getValue(String::class.java)
-
-                        val card = front?.let { back?.let { it1 ->
-                            Card(cardKey, it,
-                                it1, date, collectionId)
-                        } }
+                        val card = cardSnapshot.getValue(Card::class.java)
                         card?.let { allCards.add(it) }
                     }
                 }

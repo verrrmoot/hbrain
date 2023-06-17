@@ -11,11 +11,13 @@ import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import com.squareup.picasso.Picasso
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.pow
@@ -27,6 +29,8 @@ class RememberCardActivity: AppCompatActivity() {
     private lateinit var backCard: FrameLayout
     private lateinit var frontText: TextView
     private lateinit var backText: TextView
+    private lateinit var frontImage: ImageView
+    private lateinit var backImage: ImageView
     private lateinit var btnOne: Button
     private lateinit var btnTwo: Button
     private lateinit var btnThree: Button
@@ -35,6 +39,9 @@ class RememberCardActivity: AppCompatActivity() {
     private lateinit var firebaseHelper: FirebaseHelper
 
     private var isShowingFrontCard = true
+    private var urlF: String? = null
+    private var urlB: String? = null
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("MissingInflatedId")
@@ -59,11 +66,13 @@ class RememberCardActivity: AppCompatActivity() {
         btnFive = findViewById(R.id.btnFive)
         frontText = findViewById(R.id.txtFrontSide)
         backText = findViewById(R.id.txtBackSide)
+        frontImage = findViewById(R.id.image_view_f)
+        backImage = findViewById(R.id.image_view_b)
 
         val flipToFrontAnimation = AnimationUtils.loadAnimation(this, R.anim.flip_to_front)
         val flipToBackAnimation = AnimationUtils.loadAnimation(this, R.anim.flip_to_back)
 
-        val collectionsPressed =
+
 
         firebaseHelper.getAllCollectionCards { allCards ->
             Log.d("cards", allCards.toString())
@@ -144,23 +153,42 @@ class RememberCardActivity: AppCompatActivity() {
                         theEndToday()
                     }
                 }
+
+
             }
         }
-
 
         cardContainer.setOnClickListener {
             if (isShowingFrontCard) {
                 frontCard.startAnimation(flipToBackAnimation)
                 frontCard.visibility = View.GONE
                 backCard.visibility = View.VISIBLE
+                if (urlB != null) {
+                    Log.d("urlB", urlB.toString())
+                    Picasso.get().load(urlB).into(backImage)
+                    backImage.visibility = View.VISIBLE
+                } else {
+                    backImage.visibility = View.GONE
+                }
             } else {
                 backCard.startAnimation(flipToFrontAnimation)
                 backCard.visibility = View.GONE
                 frontCard.visibility = View.VISIBLE
+                if (urlF != null) {
+                    Log.d("urlF", urlF.toString())
+                    Picasso.get().load(urlF).into(frontImage)
+                    frontImage.visibility = View.VISIBLE
+                } else {
+                    frontImage.visibility = View.GONE
+                }
             }
 
             isShowingFrontCard = !isShowingFrontCard
         }
+
+
+
+
 
 
     }
@@ -169,9 +197,10 @@ class RememberCardActivity: AppCompatActivity() {
     fun showCardAtIndex(index: Int, cards: List<Card>) {
         val currentCard = cards[index]
         // Отобразить карточку на экране
-        // Например, установить текст на TextView для отображения содержимого карточки
         frontText.text = currentCard.front
         backText.text = currentCard.back
+        urlF = currentCard.imageUrl_f
+        urlB = currentCard.imageUrl_b
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -210,9 +239,10 @@ class RememberCardActivity: AppCompatActivity() {
         val nextReviewDate = calculateNextReviewDate(previousDate, newInterval)
         val nextReviewDateString = nextReviewDate.format(formatter)
 
-        val editedCard = Card(card.id, card.front, card.back,
-            nextReviewDateString, card.collectionId,
-            newInterval.toInt(), 1.0, card.color)
+        val editedCard = card
+        editedCard.date = nextReviewDateString
+        editedCard.interval = newInterval.toInt()
+        editedCard.factor = 1.0
 
         card.collectionId?.let {
             firebaseHelper.updateCard(editedCard, it) { success ->

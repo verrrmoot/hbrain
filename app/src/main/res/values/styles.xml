@@ -17,8 +17,8 @@
     </style>
 
     <style name="MyActionBar" parent="Widget.AppCompat.ActionBar">
-        <item name="android:background">@color/divider_color</item>
-        <item name="android:textColor">@color/menu_color</item>
+        <item name="android:background">@color/menu_color</item>
+        <item name="android:textColor">@color/divider_color</item>
     </style>
 
 

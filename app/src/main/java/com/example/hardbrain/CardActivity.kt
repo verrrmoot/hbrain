@@ -29,7 +29,7 @@ class CardActivity : AppCompatActivity() {
 
         collectionId = intent.getStringExtra("collectionId")!!
         isShare = intent.getBooleanExtra("isShare", false)
-        recyclerView = findViewById(R.id.recycler_view)
+        recyclerView = findViewById(R.id.recycler_view_card)
         adapter = CardAdapter(mutableListOf(), collectionId)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)

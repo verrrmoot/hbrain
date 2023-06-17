@@ -44,7 +44,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginVertical="3dp"
-        android:textSize="14sp"
+        android:textSize="16sp"
         android:text="Email: "
         android:padding="8dp"
         android:background="@drawable/edittext_border"/>
@@ -54,7 +54,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginVertical="3dp"
-        android:textSize="16sp"
+        android:textSize="18sp"
         android:text="Статистика: "
         android:padding="8dp"
         android:background="@drawable/edittext_border" />
@@ -62,14 +62,22 @@
 
     </LinearLayout>
     </LinearLayout>
-
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_marginHorizontal="5dp"
+        android:layout_marginVertical="5dp"
+        android:background="@drawable/divider" />
     <TextView
         android:id="@+id/text_stats"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:text="user stats"
-        android:padding="8dp" />
+        android:textSize="18sp"
+        android:text="Статистика"
+        android:fontFamily="monospace"
+        android:padding="8dp"
+        android:background="@drawable/rounded_corner"/>
 
 </LinearLayout>
 
